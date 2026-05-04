@@ -114,6 +114,14 @@
     .task-item:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
     .task-item.done .task-text { text-decoration: line-through; color: #5a5a70; }
     .task-item.done { opacity: 0.55; }
+    .task-time {
+      font-size: 10px;
+      color: #5a5a70;
+      font-family: 'Space Mono', monospace;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: 4px;
+    }
 
     .task-checkbox {
       width: 18px; height: 18px;
@@ -808,6 +816,12 @@
       container.appendChild(frag);
     }
 
+    function formatTime(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+
     function renderTaskList(container, tasks, subjectKey) {
       if (tasks.length === 0) {
         container.innerHTML = `
@@ -820,12 +834,14 @@
       const frag = document.createDocumentFragment();
       for (let i = 0; i < tasks.length; i++) {
         const t = tasks[i];
+        const timeHtml = t.done && t.completedAt ? `<span class="task-time">${formatTime(t.completedAt)}</span>` : '';
         const item = document.createElement('div');
         item.className = `task-item ${t.done ? 'done' : ''}`;
         item.dataset.index = i;
         item.innerHTML = `
           <div class="task-checkbox ${t.done ? 'checked' : ''}" data-action="toggle" data-index="${i}"></div>
           <span class="task-text text-sm text-text-primary flex-1 min-w-0 truncate">${escapeHtml(t.text)}</span>
+          ${timeHtml}
           <div class="task-delete" data-action="delete" data-index="${i}">
             <i class="fa-solid fa-xmark text-xs"></i>
           </div>
@@ -875,7 +891,7 @@
       const text = inputEl.value.trim();
       if (!text || !selectedDay) return;
       const dayData = appData.days[selectedDay - 1];
-      dayData.subjects[subjectKey].push({ text, done: false });
+      dayData.subjects[subjectKey].push({ text, done: false, completedAt: null });
       inputEl.value = '';
       scheduleSave();
       refreshAfterChange();
@@ -884,8 +900,10 @@
     function toggleTask(subjectKey, taskIdx) {
       if (!selectedDay) return;
       const dayData = appData.days[selectedDay - 1];
-      const wasDone = dayData.subjects[subjectKey][taskIdx].done;
-      dayData.subjects[subjectKey][taskIdx].done = !wasDone;
+      const task = dayData.subjects[subjectKey][taskIdx];
+      const wasDone = task.done;
+      task.done = !wasDone;
+      task.completedAt = task.done ? Date.now() : null;
       if (!wasDone) playTickSound();
       scheduleSave();
       refreshAfterChange();
@@ -934,12 +952,21 @@
           for (let j = 0; j < currentItems.length; j++) {
             const item = currentItems[j];
             const cb = item.querySelector('.task-checkbox');
-            if (tasks[j].done) {
+            const timeEl = item.querySelector('.task-time');
+            const t = tasks[j];
+            if (t.done) {
               item.classList.add('done');
               cb.classList.add('checked');
+              if (t.completedAt && !timeEl) {
+                const span = document.createElement('span');
+                span.className = 'task-time';
+                span.textContent = formatTime(t.completedAt);
+                item.insertBefore(span, item.querySelector('.task-delete'));
+              }
             } else {
               item.classList.remove('done');
               cb.classList.remove('checked');
+              if (timeEl) timeEl.remove();
             }
           }
         }
