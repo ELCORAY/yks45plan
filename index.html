@@ -3,1062 +3,1241 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YKS 45 Gün Çalışma Planlayıcı</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>YKS Çalışma Panosu</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
   <style type="text/tailwindcss">
     @theme {
-      --font-sans: 'Outfit', sans-serif;
-      --font-mono: 'Space Mono', monospace;
-      --color-void: #0a0a0f;
-      --color-abyss: #0f0f17;
-      --color-deep: #13131f;
-      --color-surface: #1a1a28;
-      --color-surface-raised: #202030;
-      --color-surface-hover: #262638;
-      --color-border: rgba(255,255,255,0.05);
-      --color-text-primary: #e8e8f0;
-      --color-text-secondary: #8a8aa0;
-      --color-text-muted: #5a5a70;
-      --color-accent: #6366f1;
-      --color-accent-dim: rgba(99,102,241,0.12);
-      --color-green: #22c55e;
-      --color-green-dim: rgba(34,197,94,0.12);
-      --color-yellow: #eab308;
-      --color-yellow-dim: rgba(234,179,8,0.12);
-      --color-red: #ef4444;
-      --color-red-dim: rgba(239,68,68,0.12);
-      --color-rose: #f43f5e;
-      --color-cyan: #06b6d4;
+      --font-display: 'Syne', sans-serif;
+      --font-sans: 'DM Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --color-void: #020208;
+      --color-deep: #080810;
+      --color-surface: #12121e;
+      --color-surface-alt: #171726;
+      --color-surface-hover: #1c1c2e;
+      --color-border: rgba(255,255,255,0.055);
+      --color-border-bright: rgba(255,255,255,0.12);
+      --color-text-primary: #eeeef8;
+      --color-text-secondary: #8080a0;
+      --color-text-muted: #48486a;
+      --color-accent: #00c9a7;
+      --color-accent-dim: rgba(0,201,167,0.1);
+      --color-teal: #d4a020;
       --color-amber: #f59e0b;
       --color-emerald: #10b981;
+      --color-rose: #f43f5e;
+      --color-red: #ef4444;
+      --color-yellow: #eab308;
+      --color-green: #22c55e;
     }
   </style>
-
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: #0a0a0f;
-      color: #e8e8f0;
-      overflow-x: hidden;
-      min-height: 100vh;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:#020208;color:#eeeef8;overflow-x:hidden;min-height:100vh}
+
+    /* BG */
+    .bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+    .orb{position:absolute;border-radius:50%;filter:blur(60px);will-change:transform}
+    .orb-1{width:900px;height:900px;background:radial-gradient(circle,rgba(0,201,167,.1) 0%,transparent 70%);top:-200px;left:-200px;animation:drift1 28s ease-in-out infinite}
+    .orb-2{width:700px;height:700px;background:radial-gradient(circle,rgba(212,160,32,.07) 0%,transparent 70%);bottom:-150px;right:-150px;animation:drift2 22s ease-in-out infinite}
+    .orb-3{width:500px;height:500px;background:radial-gradient(circle,rgba(244,63,94,.05) 0%,transparent 70%);top:45%;left:48%;transform:translate(-50%,-50%);animation:drift3 32s ease-in-out infinite}
+    @keyframes drift1{0%,100%{transform:translate(0,0)}40%{transform:translate(50px,35px)}75%{transform:translate(-25px,55px)}}
+    @keyframes drift2{0%,100%{transform:translate(0,0)}35%{transform:translate(-45px,-50px)}70%{transform:translate(35px,-20px)}}
+    @keyframes drift3{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.15)}}
+    .grid-lines{position:absolute;inset:0;background-image:linear-gradient(rgba(0,201,167,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(0,201,167,.012) 1px,transparent 1px);background-size:80px 80px}
+    .scanlines{position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.02) 2px,rgba(0,0,0,.02) 4px)}
+
+    /* ANIMATIONS */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes scaleIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+    @keyframes taskIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes checkPop{0%{transform:scale(1)}40%{transform:scale(1.28)}100%{transform:scale(1)}}
+    @keyframes pulseRing{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.75);opacity:0}}
+    @keyframes confetti{0%{transform:translateY(-30px) rotate(0deg);opacity:1}100%{transform:translateY(105vh) rotate(360deg);opacity:0}}
+    @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(0,201,167,.4)}50%{box-shadow:0 0 0 6px rgba(99,102,241,0)}}
+    @keyframes barIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+    /* TYPOGRAPHY */
+    .font-display{font-family:'Syne',sans-serif}
+    .font-mono{font-family:'JetBrains Mono',monospace}
+    .section-label{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#48486a}
+
+    /* CARDS */
+    .day-card{position:relative;background:#12121e;border:1px solid rgba(255,255,255,.055);border-radius:18px;padding:16px;cursor:pointer;transition:transform .3s cubic-bezier(.16,1,.3,1),border-color .25s,box-shadow .3s;overflow:hidden;contain:layout style}
+    .day-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);opacity:0;transition:opacity .3s}
+    .day-card:hover{transform:translateY(-4px) scale(1.01);border-color:rgba(255,255,255,.1);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+    .day-card:hover::before{opacity:1}
+    .day-card:active{transform:translateY(-1px) scale(.99)}
+    .day-card.today{border-color:rgba(0,201,167,.4);box-shadow:0 0 0 1px rgba(0,201,167,.12),0 0 48px rgba(0,201,167,.08)}
+    .day-card.today::after{content:'';position:absolute;inset:-2px;border-radius:20px;border:2px solid rgba(0,201,167,.3);animation:pulseRing 3s ease-out infinite;pointer-events:none;will-change:transform,opacity}
+    .day-card.selected{border-color:rgba(0,201,167,.6);box-shadow:0 0 0 2px rgba(0,201,167,.18),0 16px 48px rgba(0,201,167,.12)}
+    .day-card.glow-r{box-shadow:0 4px 24px rgba(239,68,68,.07)}
+    .day-card.glow-y{box-shadow:0 4px 24px rgba(234,179,8,.07)}
+    .day-card.glow-g{box-shadow:0 4px 24px rgba(34,197,94,.07)}
+    .day-card.glow-r:hover{box-shadow:0 12px 40px rgba(239,68,68,.12)}
+    .day-card.glow-y:hover{box-shadow:0 12px 40px rgba(234,179,8,.12)}
+    .day-card.glow-g:hover{box-shadow:0 12px 40px rgba(34,197,94,.12)}
+
+    /* RING */
+    .ring-svg{transform:rotate(-90deg)}
+    .ring-bg{stroke:rgba(255,255,255,.05)}
+    .ring-fill{transition:stroke-dashoffset .7s cubic-bezier(.16,1,.3,1),stroke .4s}
+
+    /* PROGRESS */
+    .prog-track{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+    .prog-fill{height:100%;border-radius:3px;transition:width .55s cubic-bezier(.16,1,.3,1);transform-origin:left}
+
+    /* STAT CARDS */
+    .stat-card{background:#12121e;border:1px solid rgba(255,255,255,.055);border-radius:18px;padding:22px;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;contain:layout style}
+    .stat-card:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px)}
+    .stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    .stat-card.sa::after{background:linear-gradient(90deg,#00c9a7,#4dd9c0)}
+    .stat-card.st::after{background:linear-gradient(90deg,#d4a020,#c08b00)}
+    .stat-card.sw::after{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+    .stat-card.se::after{background:linear-gradient(90deg,#10b981,#34d399)}
+    .stat-card.sr::after{background:linear-gradient(90deg,#f43f5e,#fb7185)}
+
+    /* TASK ITEMS */
+    .task-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.045);border-radius:11px;transition:background .2s,border-color .2s,opacity .2s;animation:taskIn .22s cubic-bezier(.16,1,.3,1) both}
+    .task-item:hover{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+    .task-item.done .task-lbl{text-decoration:line-through;color:#48486a}
+    .task-item.done{opacity:.48}
+    .task-cb{width:18px;height:18px;min-width:18px;border:2px solid rgba(255,255,255,.12);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:1px}
+    .task-cb:hover{border-color:rgba(0,201,167,.5);background:rgba(0,201,167,.06)}
+    .task-cb.checked{background:#00c9a7;border-color:#00c9a7;animation:checkPop .24s ease,glow .5s ease}
+    .task-cb.checked::after{content:'\f00c';font-family:'Font Awesome 6 Free';font-weight:900;font-size:9px;color:#fff}
+    .task-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:#48486a;white-space:nowrap;flex-shrink:0;padding-top:1px}
+    .task-del{opacity:0;min-width:26px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:7px;color:#5a5a78;cursor:pointer;transition:all .2s;margin-left:auto}
+    .task-item:hover .task-del{opacity:1}
+    .task-del:hover{background:rgba(244,63,94,.15);color:#f43f5e}
+
+    /* INPUTS */
+    .task-input{flex:1;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:11px;color:#eeeef8;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:all .25s;min-width:0}
+    .task-input::placeholder{color:#48486a}
+    .task-input:focus{border-color:rgba(0,201,167,.45);background:rgba(0,201,167,.04);box-shadow:0 0 0 3px rgba(0,201,167,.08)}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:11px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .22s;border:none}
+    .btn-p{background:#00c9a7;color:#060c0b}
+    .btn-p:hover{background:#00a98d;box-shadow:0 4px 20px rgba(0,201,167,.35);transform:translateY(-1px)}
+    .btn-g{background:rgba(255,255,255,.04);color:#8080a0;border:1px solid rgba(255,255,255,.07)}
+    .btn-g:hover{background:rgba(255,255,255,.08);color:#eeeef8;border-color:rgba(255,255,255,.12)}
+
+    /* SUBJECT PANEL */
+    .subj-panel{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:16px;overflow:hidden;transition:border-color .3s}
+    .subj-panel:hover{border-color:rgba(255,255,255,.08)}
+    .subj-header{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:background .2s}
+    .subj-header:hover{background:rgba(255,255,255,.02)}
+    .subj-body{display:grid;grid-template-rows:1fr;transition:grid-template-rows .35s cubic-bezier(.16,1,.3,1)}
+    .subj-panel.collapsed .subj-body{grid-template-rows:0fr}
+    .subj-body-inner{overflow:hidden}
+    .subj-chev{transition:transform .3s}
+    .subj-panel.collapsed .subj-chev{transform:rotate(-90deg)}
+
+    /* SIDE PANEL */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;opacity:0;pointer-events:none;transition:opacity .3s}
+    .overlay.open{opacity:1;pointer-events:auto}
+    .side-panel{position:fixed;top:0;right:0;bottom:0;width:100%;max-width:540px;background:#080810;border-left:1px solid rgba(255,255,255,.07);z-index:101;transform:translateX(105%);transition:transform .38s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;overflow:hidden}
+    .side-panel.open{transform:translateX(0)}
+    .sp-head{padding:20px 24px 18px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;background:#080810}
+    .sp-body{flex:1;overflow-y:auto;padding:20px 24px}
+    .sp-body::-webkit-scrollbar{width:5px}
+    .sp-body::-webkit-scrollbar-track{background:transparent}
+    .sp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px}
+
+
+    /* FILTER TABS */
+    .ftabs{display:flex;gap:5px;padding:5px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px}
+    .ftab{padding:7px 13px;border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;transition:all .22s;color:#8080a0;font-family:'DM Sans',sans-serif;white-space:nowrap}
+    .ftab:hover{color:#eeeef8;background:rgba(255,255,255,.04)}
+    .ftab.active{background:#00c9a7;color:#fff;box-shadow:0 4px 14px rgba(0,201,167,.3)}
+
+    /* HEATMAP */
+    .hm-cell{height:11px;border-radius:3px;transition:transform .18s,opacity .18s;cursor:pointer;flex:1}
+    .hm-cell:hover{transform:scaleY(1.6);opacity:.9}
+
+    /* WEEK HEADER */
+    .week-hdr{display:flex;align-items:center;gap:14px;margin:16px 0 10px}
+    .week-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:#48486a;letter-spacing:2px;text-transform:uppercase;white-space:nowrap}
+    .week-line{flex:1;height:1px;background:rgba(255,255,255,.04)}
+
+    /* MOOD */
+    .mood-btn{font-size:20px;cursor:pointer;transition:transform .2s,filter .2s;filter:grayscale(1) opacity(.35);border-radius:8px;padding:4px 6px}
+    .mood-btn:hover{transform:scale(1.2);filter:grayscale(0) opacity(.9)}
+    .mood-btn.sel{filter:grayscale(0) opacity(1);transform:scale(1.15)}
+
+    /* NOTES */
+    .notes-ta{width:100%;resize:none;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;color:#eeeef8;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:all .25s;min-height:80px;line-height:1.65}
+    .notes-ta::placeholder{color:#48486a}
+    .notes-ta:focus{border-color:rgba(0,201,167,.4);background:rgba(99,102,241,.03);box-shadow:0 0 0 3px rgba(0,201,167,.07)}
+
+    /* HOURS */
+    .hrs-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:9px;cursor:pointer;color:#8080a0;transition:all .2s}
+    .hrs-btn:hover{background:rgba(255,255,255,.09);color:#eeeef8}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#181828;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px 22px;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;z-index:2000;box-shadow:0 20px 60px rgba(0,0,0,.6);transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .25s;opacity:0;pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+    /* SUBJECT TAG */
+    .stag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:500}
+
+    /* EMPTY */
+    .empty{display:flex;flex-direction:column;align-items:center;padding:24px 16px;color:#48486a;text-align:center;gap:8px}
+
+    /* KEYBOARD MODAL */
+    kbd{background:#0d1a18;border:1px solid rgba(0,201,167,.2);padding:3px 8px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#00c9a7}
+
+
+    /* ── NOISE TEXTURE ── */
+    .bg-canvas::after{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");opacity:.4;pointer-events:none;mix-blend-mode:overlay}
+
+    /* ── GRADIENT BORDER TRICK (key cards) ── */
+    .gcard{position:relative;border-radius:20px}
+    .gcard::before{content:'';position:absolute;inset:-1px;border-radius:21px;background:linear-gradient(135deg,rgba(0,201,167,.3) 0%,transparent 40%,rgba(212,160,32,.15) 100%);z-index:0;pointer-events:none}
+    .gcard > *{position:relative;z-index:1}
+
+    /* ── ORBS: slightly richer ── */
+    .orb-1{background:radial-gradient(circle,rgba(0,201,167,.13) 0%,transparent 65%) !important}
+    .orb-2{background:radial-gradient(circle,rgba(212,160,32,.09) 0%,transparent 65%) !important}
+
+    /* ── SECTION LABEL: turquoise tint ── */
+    .section-label{color:rgba(0,201,167,.45) !important;letter-spacing:2.5px !important}
+
+    /* ── STAT CARDS: glass + glow on hover ── */
+    .stat-card{background:rgba(14,14,26,.9) !important;}
+    .stat-card::before{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.04) 0%,transparent 60%);pointer-events:none}
+    .stat-card.sa:hover{box-shadow:0 8px 32px rgba(0,201,167,.12),0 0 0 1px rgba(0,201,167,.25) !important}
+    .stat-card.st:hover{box-shadow:0 8px 32px rgba(212,160,32,.1),0 0 0 1px rgba(212,160,32,.2) !important}
+    .stat-card.sw:hover{box-shadow:0 8px 32px rgba(245,158,11,.1),0 0 0 1px rgba(245,158,11,.2) !important}
+    .stat-card.se:hover{box-shadow:0 8px 32px rgba(16,185,129,.1),0 0 0 1px rgba(16,185,129,.2) !important}
+
+    /* ── DAY CARDS: glass surface ── */
+    .day-card{background:rgba(14,14,26,.85) !important;}
+    .day-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);opacity:1 !important}
+
+    /* ── PROGRESS CARD: inner shine ── */
+    #subjBreakCard::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,rgba(0,201,167,.04) 0%,transparent 50%);border-radius:20px;pointer-events:none}
+
+    /* ── GRID LINES: dot pattern overlay ── */
+    .grid-lines{background-image:radial-gradient(rgba(0,201,167,.06) 1px, transparent 1px) !important;background-size:32px 32px !important}
+
+    /* ── COUNTDOWN CHIPS: premium glass ── */
+    .cd-chip{background:rgba(0,201,167,.06) !important;border:1px solid rgba(0,201,167,.2) !important;box-shadow:0 0 16px rgba(0,201,167,.06),inset 0 1px 0 rgba(255,255,255,.06) !important;border-radius:10px !important}
+    .cd-chip .cd-num{color:#00c9a7 !important;text-shadow:0 0 20px rgba(0,201,167,.4)}
+
+    /* ── WEEK HEADER LINE: gradient ── */
+    .week-line{background:linear-gradient(90deg,rgba(0,201,167,.15),rgba(212,160,32,.08),transparent) !important}
+    .week-lbl{color:rgba(0,201,167,.4) !important}
+
+    /* ── SIDE PANEL: glass ── */
+    .side-panel{background:rgba(8,8,16,.95) !important;}
+
+    /* ── BTNS: glass secondary ── */
+    .btn-g{background:rgba(255,255,255,.04) !important;border:1px solid rgba(255,255,255,.09) !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+    .btn-g:hover{background:rgba(255,255,255,.09) !important;border-color:rgba(0,201,167,.2) !important}
+    .btn-p{box-shadow:0 4px 20px rgba(0,201,167,.25),inset 0 1px 0 rgba(255,255,255,.15) !important}
+
+    /* ── FILTER TABS ── */
+    .ftab.active{box-shadow:0 4px 16px rgba(0,201,167,.25),inset 0 1px 0 rgba(255,255,255,.15) !important}
+
+    /* ── LOGO ICON: subtle pulse ── */
+    @keyframes logoPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,201,167,.3)}70%{box-shadow:0 0 0 8px rgba(0,201,167,0)}}
+    .logo-icon{animation:logoPulse 3s ease-in-out infinite}
+
+    /* ── OVERALL PROGRESS HEADER TOP BAR ── */
+    .prog-topbar{background:linear-gradient(90deg,#00c9a7,rgba(212,160,32,.8),rgba(0,201,167,.4)) !important;opacity:.7 !important}
+
+    /* ── TOAST: glass ── */
+    .toast{background:rgba(18,18,30,.95) !important;border-color:rgba(0,201,167,.15) !important}
+
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       OBSIDIAN TERMINAL — Complete Premium Redesign
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+    /* FOUNDATION */
+    body { background: #03030a !important; }
+
+    /* Performance: Respect reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .orb, .grid-lines, .scanlines { display: none !important; }
     }
 
-    .ambient-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .ambient-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.08; animation: orbFloat 20s ease-in-out infinite; }
-    .ambient-orb:nth-child(1) { width: 600px; height: 600px; background: #6366f1; top: -10%; left: -5%; }
-    .ambient-orb:nth-child(2) { width: 500px; height: 500px; background: #06b6d4; bottom: -15%; right: -10%; animation-delay: -7s; animation-duration: 25s; }
-    .ambient-orb:nth-child(3) { width: 400px; height: 400px; background: #f43f5e; top: 40%; left: 50%; animation-delay: -14s; animation-duration: 22s; }
-    @keyframes orbFloat {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(30px, -40px) scale(1.05); }
-      50% { transform: translate(-20px, 20px) scale(0.95); }
-      75% { transform: translate(40px, 10px) scale(1.02); }
+    /* Performance: Disable complex effects on low-power devices */
+    @media (prefers-reduced-motion: reduce) or (hover: none) {
+      .bg-canvas::after { display: none !important; }
     }
 
-    .noise-overlay { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.025; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-repeat: repeat; background-size: 256px; }
-    .grid-pattern { position: fixed; inset: 0; z-index: 0; pointer-events: none; background-image: linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%); }
-
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.6); opacity: 0; } }
-    @keyframes checkPop { 0% { transform: scale(1); } 40% { transform: scale(1.2); } 100% { transform: scale(1); } }
-    @keyframes taskSlide { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-    @keyframes checkGlow { 0% { box-shadow: 0 0 0 0 rgba(99,102,241,0.5); } 50% { box-shadow: 0 0 0 6px rgba(99,102,241,0); } 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); } }
-
-    .anim-fade-up { animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
-    .anim-scale-in { animation: scaleIn 0.35s cubic-bezier(0.16,1,0.3,1) forwards; opacity: 0; }
-
-    .day-card {
-      position: relative;
-      background: #1a1a28;
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 16px;
-      padding: 16px;
-      cursor: pointer;
-      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease, box-shadow 0.3s ease;
+    /* BACKGROUND — richer depth */
+    .orb-1 {
+      width: 1100px !important; height: 1100px !important;
+      background: radial-gradient(circle, rgba(0,201,167,.11) 0%, transparent 62%) !important;
+      filter: blur(60px) !important; top: -300px !important; left: -250px !important;
       will-change: transform;
     }
-    .day-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.1); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
-    .day-card:active { transform: translateY(-1px) scale(0.98); }
-    .day-card.today { border-color: rgba(99,102,241,0.4); box-shadow: 0 0 0 1px rgba(99,102,241,0.15), 0 0 40px rgba(99,102,241,0.08); }
-    .day-card.today::after { content: ''; position: absolute; inset: -2px; border-radius: 18px; border: 2px solid rgba(99,102,241,0.3); animation: pulse-ring 2.5s ease-out infinite; pointer-events: none; }
-    .day-card.selected { border-color: rgba(99,102,241,0.6); box-shadow: 0 0 0 2px rgba(99,102,241,0.2), 0 12px 40px rgba(99,102,241,0.1); }
-
-    .day-card.glow-red { box-shadow: 0 0 20px rgba(239,68,68,0.08), 0 4px 12px rgba(0,0,0,0.3); }
-    .day-card.glow-yellow { box-shadow: 0 0 20px rgba(234,179,8,0.08), 0 4px 12px rgba(0,0,0,0.3); }
-    .day-card.glow-green { box-shadow: 0 0 20px rgba(34,197,94,0.08), 0 4px 12px rgba(0,0,0,0.3); }
-    .day-card.glow-red:hover { box-shadow: 0 0 30px rgba(239,68,68,0.12), 0 8px 24px rgba(0,0,0,0.4); }
-    .day-card.glow-yellow:hover { box-shadow: 0 0 30px rgba(234,179,8,0.12), 0 8px 24px rgba(0,0,0,0.4); }
-    .day-card.glow-green:hover { box-shadow: 0 0 30px rgba(34,197,94,0.12), 0 8px 24px rgba(0,0,0,0.4); }
-
-    .progress-ring { transform: rotate(-90deg); }
-    .progress-ring-bg { stroke: rgba(255,255,255,0.06); }
-    .progress-ring-fill { transition: stroke-dashoffset 0.6s cubic-bezier(0.16,1,0.3,1), stroke 0.4s ease; }
-
-    .task-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.04);
-      border-radius: 10px;
-      transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+    .orb-2 {
+      width: 800px !important; height: 800px !important;
+      background: radial-gradient(circle, rgba(212,160,32,.08) 0%, transparent 62%) !important;
+      filter: blur(50px) !important;
+      will-change: transform;
     }
-    .task-item:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
-    .task-item.done .task-text { text-decoration: line-through; color: #5a5a70; }
-    .task-item.done { opacity: 0.55; }
-    .task-time {
-      font-size: 10px;
-      color: #5a5a70;
-      font-family: 'Space Mono', monospace;
-      white-space: nowrap;
+    .orb-3 {
+      background: radial-gradient(circle, rgba(0,201,167,.03) 0%, transparent 70%) !important;
+      filter: blur(80px) !important;
+      will-change: transform;
+    }
+    /* Dot matrix — crisp and minimal */
+    .grid-lines {
+      background-image: radial-gradient(circle, rgba(0,201,167,.055) 1px, transparent 1px) !important;
+      background-size: 36px 36px !important;
+    }
+    /* Subtle diagonal vignette */
+    .bg-canvas::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, transparent 60%, rgba(3,3,10,.7) 100%);
+      pointer-events: none;
+    }
+
+    /* SECTION LABEL — turquoise line prefix */
+    .section-label {
+      color: rgba(0,201,167,.5) !important;
+      letter-spacing: 3px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 18px; height: 1px;
+      background: rgba(0,201,167,.5);
       flex-shrink: 0;
-      margin-left: 4px;
     }
 
-    .task-checkbox {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.15);
-      border-radius: 5px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.2s ease;
+    /* HEADER TITLE ACCENT */
+    .header-title-wrap {
+      position: relative;
+      padding-left: 18px;
     }
-    .task-checkbox:hover { border-color: rgba(99,102,241,0.5); }
-    .task-checkbox.checked {
-      background: #6366f1; border-color: #6366f1;
-      animation: checkPop 0.25s ease, checkGlow 0.4s ease;
-      box-shadow: 0 0 10px rgba(99,102,241,0.3);
+    .header-title-wrap::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 2px; bottom: 2px;
+      width: 3px;
+      background: linear-gradient(180deg, #00c9a7 0%, rgba(212,160,32,.6) 100%);
+      border-radius: 2px;
     }
-    .task-checkbox.checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 9px; color: white; }
 
-    .task-delete {
-      opacity: 0; width: 26px; height: 26px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 7px; color: #5a5a70; cursor: pointer;
-      transition: all 0.2s ease; margin-left: auto; flex-shrink: 0;
-    }
-    .task-item:hover .task-delete { opacity: 1; }
-    .task-delete:hover { background: rgba(244,63,94,0.15); color: #f43f5e; }
-
-    .task-input {
-      width: 100%; padding: 10px 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 10px; color: #e8e8f0;
-      font-size: 13px; font-family: 'Outfit', sans-serif;
-      outline: none; transition: all 0.25s ease;
-    }
-    .task-input::placeholder { color: #5a5a70; }
-    .task-input:focus { border-color: rgba(99,102,241,0.4); background: rgba(99,102,241,0.04); box-shadow: 0 0 0 3px rgba(99,102,241,0.08); }
-
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 9px 18px; border-radius: 11px;
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      transition: all 0.25s ease; border: none;
-      font-family: 'Outfit', sans-serif;
-    }
-    .btn-primary { background: #6366f1; color: white; }
-    .btn-primary:hover { background: #5558e0; box-shadow: 0 4px 20px rgba(99,102,241,0.3); transform: translateY(-1px); }
-    .btn-ghost { background: rgba(255,255,255,0.04); color: #8a8aa0; border: 1px solid rgba(255,255,255,0.06); }
-    .btn-ghost:hover { background: rgba(255,255,255,0.08); color: #e8e8f0; border-color: rgba(255,255,255,0.1); }
-
+    /* STAT CARDS — premium */
     .stat-card {
-      background: #1a1a28; border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 16px; padding: 18px;
-      position: relative; overflow: hidden;
-      transition: border-color 0.3s ease, transform 0.3s ease;
+      background: rgba(255,255,255,.025) !important;
+      border: 1px solid rgba(255,255,255,.07) !important;
+      border-radius: 20px !important;
+      padding: 20px 22px 22px !important;
+      transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s, border-color .3s !important;
     }
-    .stat-card:hover { border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
-    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; opacity: 0.6; }
-    .stat-card.accent::before { background: #6366f1; }
-    .stat-card.yellow::before { background: #eab308; }
-    .stat-card.rose::before { background: #f43f5e; }
+    .stat-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg, rgba(255,255,255,.05) 0%, transparent 55%);
+      border-radius: 20px;
+      pointer-events: none;
+    }
+    .stat-card::after { height: 2px !important; border-radius: 0 !important; }
+    .stat-card.sa:hover { box-shadow: 0 12px 40px rgba(0,201,167,.15), 0 0 0 1px rgba(0,201,167,.2) !important; border-color: rgba(0,201,167,.25) !important; transform: translateY(-3px) !important; }
+    .stat-card.st:hover { box-shadow: 0 12px 40px rgba(212,160,32,.12), 0 0 0 1px rgba(212,160,32,.2) !important; border-color: rgba(212,160,32,.25) !important; transform: translateY(-3px) !important; }
+    .stat-card.sw:hover { box-shadow: 0 12px 40px rgba(245,158,11,.12), 0 0 0 1px rgba(245,158,11,.2) !important; border-color: rgba(245,158,11,.25) !important; transform: translateY(-3px) !important; }
+    .stat-card.se:hover { box-shadow: 0 12px 40px rgba(16,185,129,.12), 0 0 0 1px rgba(16,185,129,.2) !important; border-color: rgba(16,185,129,.25) !important; transform: translateY(-3px) !important; }
 
-    .subject-panel {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 16px; overflow: hidden;
-      transition: border-color 0.3s ease;
+    /* DAY CARDS — glass with left accent */
+    .day-card {
+      background: rgba(255,255,255,.025) !important;
+      border: 1px solid rgba(255,255,255,.07) !important;
+      border-radius: 18px !important;
     }
-    .subject-panel:hover { border-color: rgba(255,255,255,0.08); }
-    .subject-header {
-      padding: 14px 18px;
-      display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.2s ease;
+    .day-card::before {
+      content: '' !important;
+      position: absolute !important;
+      top: 0 !important; left: 0 !important; right: 0 !important;
+      height: 1px !important;
+      background: linear-gradient(90deg, rgba(0,201,167,.25), rgba(212,160,32,.1), transparent) !important;
+      opacity: 1 !important;
     }
-    .subject-header:hover { background: rgba(255,255,255,0.02); }
-
-    .subject-body {
-      display: grid;
-      grid-template-rows: 1fr;
-      transition: grid-template-rows 0.35s cubic-bezier(0.16,1,0.3,1);
+    .day-card:hover {
+      transform: translateY(-4px) scale(1.008) !important;
+      border-color: rgba(0,201,167,.18) !important;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(0,201,167,.08) !important;
     }
-    .subject-panel.collapsed .subject-body {
-      grid-template-rows: 0fr;
+    .day-card.today {
+      border-color: rgba(0,201,167,.35) !important;
+      background: rgba(0,201,167,.035) !important;
+      box-shadow: 0 0 0 1px rgba(0,201,167,.1), 0 0 60px rgba(0,201,167,.07) !important;
     }
-    .subject-body-inner {
-      overflow: hidden;
-    }
-    .subject-chevron {
-      transition: transform 0.3s ease;
-    }
-    .subject-panel.collapsed .subject-chevron {
-      transform: rotate(-90deg);
+    .day-card.selected {
+      border-color: rgba(0,201,167,.5) !important;
+      box-shadow: 0 0 0 2px rgba(0,201,167,.15), 0 20px 60px rgba(0,201,167,.1) !important;
     }
 
-    .progress-track { height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(0.16,1,0.3,1), background-color 0.3s ease; transform-origin: left; }
-
-    .side-panel-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-      z-index: 100; opacity: 0; pointer-events: none;
-      transition: opacity 0.3s ease;
+    /* PROGRESS / SUBJECT CARD */
+    #subjBreakCard {
+      background: rgba(255,255,255,.022) !important;
+      border: 1px solid rgba(255,255,255,.07) !important;
     }
-    .side-panel-overlay.active { opacity: 1; pointer-events: auto; }
+    #subjBreakCard::after {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, #00c9a7, rgba(212,160,32,.5), transparent);
+      border-radius: 2px 0 0 2px;
+    }
 
+    /* PROG TRACK — slightly taller */
+    .prog-track { height: 5px !important; background: rgba(255,255,255,.06) !important; border-radius: 3px !important; overflow: hidden !important; }
+
+    /* WEEK HEADERS */
+    .week-hdr { margin: 22px 0 12px !important; }
+    .week-lbl {
+      color: rgba(0,201,167,.45) !important;
+      letter-spacing: 3px !important;
+      font-size: 9px !important;
+      white-space: nowrap;
+    }
+    .week-line { background: linear-gradient(90deg, rgba(0,201,167,.12), rgba(212,160,32,.06), transparent) !important; }
+
+    /* FILTER TABS */
+    .ftabs {
+      background: rgba(255,255,255,.025) !important;
+      border: 1px solid rgba(255,255,255,.07) !important;
+    }
+    .ftab.active {
+      background: rgba(0,201,167,.12) !important;
+      color: #00c9a7 !important;
+      border: 1px solid rgba(0,201,167,.28) !important;
+      box-shadow: 0 2px 16px rgba(0,201,167,.12), inset 0 1px 0 rgba(255,255,255,.1) !important;
+    }
+
+    /* BUTTONS */
+    .btn-p {
+      background: linear-gradient(135deg, #00c9a7, #009e84) !important;
+      color: #020c0a !important;
+      font-weight: 700 !important;
+      letter-spacing: .2px !important;
+      box-shadow: 0 4px 20px rgba(0,201,167,.28), inset 0 1px 0 rgba(255,255,255,.18) !important;
+    }
+    .btn-p:hover {
+      background: linear-gradient(135deg, #00dfc0, #00c9a7) !important;
+      box-shadow: 0 6px 28px rgba(0,201,167,.38), inset 0 1px 0 rgba(255,255,255,.22) !important;
+      transform: translateY(-1px) !important;
+    }
+    .btn-g {
+      background: rgba(255,255,255,.04) !important;
+      border: 1px solid rgba(255,255,255,.09) !important;
+      color: #8080a0 !important;
+    }
+    .btn-g:hover {
+      background: rgba(255,255,255,.08) !important;
+      border-color: rgba(0,201,167,.2) !important;
+      color: #eeeef8 !important;
+    }
+
+    /* SIDE PANEL — deep glass */
     .side-panel {
-      position: fixed; top: 0; right: 0; bottom: 0;
-      width: 100%; max-width: 520px;
-      background: #0f0f17;
-      border-left: 1px solid rgba(255,255,255,0.06);
-      z-index: 101;
-      transform: translateX(100%);
-      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
-      display: flex; flex-direction: column; overflow: hidden;
+      background: rgba(3,3,12,.98) !important;
+      border-left: 1px solid rgba(0,201,167,.1) !important;
     }
-    .side-panel.active { transform: translateX(0); }
-    .side-panel-header { padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; background: #0f0f17; }
-    .side-panel-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
-    .side-panel-body::-webkit-scrollbar { width: 5px; }
-    .side-panel-body::-webkit-scrollbar-track { background: transparent; }
-    .side-panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+    @supports (backdrop-filter: blur(20px)) {
+      .side-panel {
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        background: rgba(3,3,12,.92) !important;
+      }
+    }
+    .sp-head { background: transparent !important; border-bottom: 1px solid rgba(255,255,255,.05) !important; }
 
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+    /* SUBJ PANELS inside side panel */
+    .subj-panel {
+      background: rgba(255,255,255,.02) !important;
+      border: 1px solid rgba(255,255,255,.06) !important;
+      border-radius: 14px !important;
+    }
+    .subj-header:hover { background: rgba(0,201,167,.04) !important; }
 
+    /* TASK ITEMS */
+    .task-item {
+      background: rgba(255,255,255,.02) !important;
+      border: 1px solid rgba(255,255,255,.05) !important;
+      border-radius: 10px !important;
+    }
+    .task-item:hover {
+      background: rgba(255,255,255,.04) !important;
+      border-color: rgba(0,201,167,.1) !important;
+    }
+    .task-input:focus {
+      border-color: rgba(0,201,167,.4) !important;
+      background: rgba(0,201,167,.04) !important;
+      box-shadow: 0 0 0 3px rgba(0,201,167,.07) !important;
+    }
+
+    /* TOAST */
     .toast {
-      position: fixed; bottom: 24px; left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #202030; border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 14px; padding: 14px 24px;
-      display: flex; align-items: center; gap: 10px;
-      font-size: 14px; font-weight: 500; color: #e8e8f0;
-      z-index: 1000; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease;
-      opacity: 0; pointer-events: none;
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-    .day-number { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
-    .percent-text { font-family: 'Space Mono', monospace; font-weight: 700; font-size: 12px; }
-
-    .subject-tag {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 2px 8px; border-radius: 6px;
-      font-size: 10px; font-weight: 500;
+      background: rgba(5,5,16,.98) !important;
+      border: 1px solid rgba(0,201,167,.18) !important;
+      box-shadow: 0 24px 64px rgba(0,0,0,.8), 0 0 0 1px rgba(0,201,167,.08) !important;
     }
 
-    .empty-state { text-align: center; padding: 32px 16px; color: #5a5a70; }
-    .empty-state i { font-size: 28px; margin-bottom: 10px; opacity: 0.4; }
-
-    #fileInput { display: none; }
-
-    @media (max-width: 640px) {
-      .side-panel { max-width: 100%; }
-      .day-card { padding: 12px; border-radius: 14px; }
-      .stat-card { padding: 14px; }
+    /* KBD */
+    kbd {
+      background: rgba(0,201,167,.08) !important;
+      border: 1px solid rgba(0,201,167,.22) !important;
+      color: #00c9a7 !important;
     }
+
+    /* LOGO ICON ANIMATION */
+    @keyframes heroPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,201,167,.35); }
+      60% { box-shadow: 0 0 0 10px rgba(0,201,167,0); }
+    }
+    .logo-icon { animation: heroPulse 4s ease-in-out infinite !important; }
+
+    /* HEATMAP CELLS — taller on hover */
+    .hm-cell:hover { transform: scaleY(2) !important; }
+
+    /* NOTES */
+    .notes-ta:focus {
+      border-color: rgba(0,201,167,.35) !important;
+      background: rgba(0,201,167,.025) !important;
+      box-shadow: 0 0 0 3px rgba(0,201,167,.06) !important;
+    }
+
+    /* OVERLAY */
+    .overlay { background: rgba(0,0,0,.82) !important; }
+
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.14)}
+    #fileInput{display:none}
+    @media(max-width:640px){.side-panel{max-width:100%}.day-card{padding:14px}}
   </style>
 </head>
-<body class="min-h-screen">
-  <div class="ambient-bg"><div class="ambient-orb"></div><div class="ambient-orb"></div><div class="ambient-orb"></div></div>
-  <div class="noise-overlay"></div>
-  <div class="grid-pattern"></div>
+<body>
+<div class="bg-canvas">
+  <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+  <div class="grid-lines"></div><div class="scanlines"></div>
+</div>
 
-  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-    <header class="mb-8 sm:mb-10 anim-fade-up">
-      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        <div>
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-              <i class="fa-solid fa-graduation-cap text-accent text-lg"></i>
-            </div>
-            <div>
-              <p class="text-text-muted text-xs font-mono tracking-wider uppercase">YKS Hazırlık</p>
-              <h1 class="text-2xl sm:text-3xl font-bold text-text-primary tracking-tight">YKS ÇALIŞMA PANOSU</h1>
-            </div>
+<div class="relative z-10 px-4 sm:px-6 py-8 sm:py-10" style="max-width:1280px;margin-left:auto;margin-right:auto;width:100%;">
+
+  <!-- HEADER -->
+  <header class="mb-10" style="animation:fadeUp .5s ease both">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:0;">
+        <div class="header-title-wrap" style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div class="logo-icon w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(0,201,167,.08);border:1px solid rgba(0,201,167,.2);box-shadow:0 4px 24px rgba(0,201,167,.1)">
+            <i class="fa-solid fa-graduation-cap" style="color:#00c9a7;font-size:24px"></i>
           </div>
-          <p class="text-text-secondary text-sm mt-1 ml-[52px] flex items-center gap-2 flex-wrap">
-            <span id="countdownBadge" class="text-accent text-xs font-medium bg-accent-dim px-2.5 py-0.5 rounded-full"></span>
-          </p>
-        </div>
-        <div class="flex items-center gap-2 ml-[52px] sm:ml-0">
-          <button onclick="exportData()" class="btn btn-ghost text-xs">
-            <i class="fa-solid fa-download"></i>
-            <span class="hidden sm:inline">Verileri İndir</span>
-            <span class="sm:hidden">İndir</span>
-          </button>
-          <button onclick="document.getElementById('fileInput').click()" class="btn btn-ghost text-xs">
-            <i class="fa-solid fa-upload"></i>
-            <span class="hidden sm:inline">Veri Yükle</span>
-            <span class="sm:hidden">Yükle</span>
-          </button>
-          <input type="file" id="fileInput" accept=".json" onchange="importData(event)">
-        </div>
-      </div>
-    </header>
-
-    <section id="statsSection" class="mb-8 sm:mb-10 anim-fade-up" style="animation-delay:0.05s">
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 max-w-2xl mx-auto" id="statsGrid"></div>
-    </section>
-
-    <section class="mb-8 sm:mb-10 anim-fade-up" style="animation-delay:0.1s">
-      <div class="bg-surface border border-border rounded-2xl p-5 sm:p-6 relative overflow-hidden">
-        <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent via-cyan to-accent opacity-60"></div>
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center">
-              <i class="fa-solid fa-chart-line text-accent text-sm"></i>
-            </div>
-            <div>
-              <h3 class="text-text-primary font-semibold text-sm">Genel İlerleme</h3>
-              <p class="text-text-muted text-xs">Tüm günlerin ortalama tamamlanma oranı</p>
-            </div>
+          <div class="min-w-0">
+            <p class="section-label mb-0.5">YKS Hazırlık 2026</p>
+            <h1 class="font-display text-3xl sm:text-4xl font-bold leading-none" style="color:#eeeef8">
+              Çalışma <span style="color:#00c9a7">Panosu</span>
+            </h1>
           </div>
-          <span id="overallPercent" class="percent-text text-accent text-lg">0%</span>
         </div>
-        <div class="progress-track">
-          <div id="overallBar" class="progress-fill bg-gradient-to-r from-accent to-cyan" style="width:0%"></div>
-        </div>
-        <div class="flex justify-between mt-3 text-xs text-text-muted">
-          <span id="totalCompleted">0 tamamlanan görev</span>
-          <span id="totalTasks">0 toplam görev</span>
+        <div id="cdRow" class="flex flex-wrap items-center gap-2 mb-5 ml-[60px]"></div>
+        <div class="ml-[60px] max-w-md" style="padding-bottom:4px">
+          <p id="qText" class="text-sm italic leading-relaxed" style="color:#8080a0;transition:opacity .4s,transform .4s;cursor:pointer" title="Başka alıntı için tıkla"></p>
+          <p id="qAuthor" class="text-xs mt-1 font-mono" style="color:#48486a"></p>
         </div>
       </div>
-    </section>
-
-    <section class="mb-10 anim-fade-up" style="animation-delay:0.15s">
-      <div class="flex items-center justify-between mb-5">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-accent-dim flex items-center justify-center">
-            <i class="fa-solid fa-calendar-days text-accent text-sm"></i>
-          </div>
-          <h2 class="text-text-primary font-semibold text-base">Günler</h2>
-        </div>
-        <div class="flex items-center gap-3 text-xs text-text-muted">
-          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red"></span> Düşük</span>
-          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-yellow"></span> Orta</span>
-          <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green"></span> İyi</span>
-        </div>
-      </div>
-      <div id="dayGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"></div>
-    </section>
-  </div>
-
-  <div id="sidePanelOverlay" class="side-panel-overlay" onclick="closeSidePanel()"></div>
-  <div id="sidePanel" class="side-panel">
-    <div class="side-panel-header">
-      <div class="flex items-center justify-between mb-4">
-        <button onclick="closeSidePanel()" class="btn btn-ghost text-xs">
-          <i class="fa-solid fa-arrow-left"></i> Kapat
-        </button>
-      </div>
-      <div class="flex items-center gap-4">
-        <div id="spDayBadge" class="w-12 h-12 rounded-2xl bg-accent-dim flex items-center justify-center flex-shrink-0">
-          <span id="spDayNum" class="text-accent font-bold text-lg font-mono">1</span>
-        </div>
-        <div class="min-w-0">
-          <h2 id="spDateTitle" class="text-lg sm:text-xl font-bold text-text-primary truncate">5 Mayıs 2026</h2>
-          <p id="spDaySubtitle" class="text-text-secondary text-sm">1. Gün · 5/10 görev tamamlandı</p>
-        </div>
-      </div>
-      <div class="mt-4 flex items-center gap-4">
-        <div class="flex-1"><div class="progress-track"><div id="spBar" class="progress-fill bg-accent" style="width:0%"></div></div></div>
-        <span id="spPercent" class="percent-text text-accent text-sm font-bold">50%</span>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;">
+        <button onclick="exportData()" class="btn btn-g text-xs"><i class="fa-solid fa-download"></i><span class="hidden sm:inline">Dışa Aktar</span></button>
+        <button onclick="document.getElementById('fileInput').click()" class="btn btn-g text-xs"><i class="fa-solid fa-upload"></i><span class="hidden sm:inline">İçe Aktar</span></button>
+        <button onclick="showShortcuts()" class="btn btn-g text-xs"><i class="fa-solid fa-keyboard"></i></button>
+        <input type="file" id="fileInput" accept=".json" onchange="importData(event)">
       </div>
     </div>
-    <div class="side-panel-body" id="spSubjects"></div>
-  </div>
+  </header>
 
-  <div id="toast" class="toast">
-    <i id="toastIcon" class="fa-solid fa-check-circle toast-icon text-green"></i>
-    <span id="toastMessage">İşlem başarılı</span>
-  </div>
+  <!-- HEATMAP -->
+  <div style="height:1px;background:linear-gradient(90deg,transparent 5%,rgba(0,201,167,.18) 35%,rgba(212,160,32,.1) 65%,transparent 95%);margin-bottom:22px"></div>
+  <section style="margin-bottom:28px;animation:fadeUp .5s .04s ease both">
+    <p class="section-label mb-3">45 Günlük Tamamlanma Haritası</p>
+    <div id="heatmap" class="flex gap-[3px]" style="height:14px"></div>
+  </section>
 
-  <script>
-    // ===================== CONSTANTS =====================
-    const SUBJECTS = [
-      { key: 'matematik', name: 'Matematik', icon: 'fa-square-root-variable', color: '#6366f1' },
-      { key: 'fizik', name: 'Fizik', icon: 'fa-atom', color: '#06b6d4' },
-      { key: 'kimya', name: 'Kimya', icon: 'fa-flask', color: '#f59e0b' },
-      { key: 'biyoloji', name: 'Biyoloji', icon: 'fa-dna', color: '#10b981' },
-      { key: 'geometri', name: 'Geometri', icon: 'fa-shapes', color: '#f43f5e' }
-    ];
-    const MONTHS_TR = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-    const DAYS_TR = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
-    const START_DATE = new Date(2026, 4, 5);
-    const EXAM_DATE = new Date(2026, 5, 20);
-    const STORAGE_KEY = 'yks_planner_v3';
-    const RING_CIRCUMFERENCE = 2 * Math.PI * 18;
+  <!-- STATS GRID -->
+  <section style="margin-bottom:24px;animation:fadeUp .5s .07s ease both">
+    <div id="statsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+  </section>
 
-    // ===================== STATE =====================
-    let appData = { days: [] };
-    let selectedDay = null;
-    let savedScrollY = 0;
-    let saveTimeout = null;
-    let dayCardRefs = new Map();
-    let panelRefs = null;
-    let audioCtx = null;
-    let statRefs = {};
-
-    // ===================== DATE HELPERS =====================
-    function getDateForDay(dayNum) {
-      const d = new Date(START_DATE);
-      d.setDate(d.getDate() + (dayNum - 1));
-      return d;
-    }
-    function formatDateFull(date) {
-      return `${date.getDate()} ${MONTHS_TR[date.getMonth()]} ${date.getFullYear()}, ${DAYS_TR[date.getDay()]}`;
-    }
-    function formatDateShort(date) {
-      return `${date.getDate()} ${MONTHS_TR[date.getMonth()]}`;
-    }
-    function isToday(date) {
-      const now = new Date();
-      return date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-    }
-    function updateCountdown() {
-      const now = new Date();
-      now.setHours(0,0,0,0);
-      const exam = new Date(EXAM_DATE);
-      exam.setHours(0,0,0,0);
-      const diff = Math.ceil((exam - now) / 86400000);
-      const el = document.getElementById('countdownBadge');
-      if (!el) return;
-      if (diff > 0) el.textContent = `Sınava ${diff} gün kaldı`;
-      else if (diff === 0) el.textContent = 'Bugün sınav!';
-      else el.textContent = `Sınav ${Math.abs(diff)} gün önceydi`;
-    }
-
-    // ===================== AUDIO =====================
-    function initAudio() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    function playTickSound() {
-      if (!audioCtx) initAudio();
-      if (!audioCtx) return;
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.05);
-      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-      osc.start(audioCtx.currentTime);
-      osc.stop(audioCtx.currentTime + 0.1);
-    }
-
-    // ===================== DATA =====================
-    function initData() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          appData = JSON.parse(saved);
-          if (!appData.days || appData.days.length !== 45) throw new Error('Invalid');
-          appData.days.forEach(d => {
-            SUBJECTS.forEach(s => { if (!d.subjects[s.key]) d.subjects[s.key] = []; });
-          });
-          return;
-        } catch (e) { console.warn('Corrupted data, resetting'); }
-      }
-      appData = { days: [] };
-      for (let i = 1; i <= 45; i++) {
-        const day = { day: i, subjects: {} };
-        SUBJECTS.forEach(s => { day.subjects[s.key] = []; });
-        appData.days.push(day);
-      }
-      scheduleSave();
-    }
-
-    function scheduleSave() {
-      if (saveTimeout) clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-        saveTimeout = null;
-      }, 400);
-    }
-
-    // ===================== STATS =====================
-    function getDayStats(dayData) {
-      let total = 0, done = 0;
-      for (let i = 0; i < SUBJECTS.length; i++) {
-        const tasks = dayData.subjects[SUBJECTS[i].key];
-        total += tasks.length;
-        for (let j = 0; j < tasks.length; j++) if (tasks[j].done) done++;
-      }
-      return { total, done, percent: total > 0 ? Math.round((done / total) * 100) : 0 };
-    }
-
-    function getOverallStats() {
-      let totalTasks = 0, totalDone = 0;
-      for (let i = 0; i < appData.days.length; i++) {
-        const s = getDayStats(appData.days[i]);
-        totalTasks += s.total;
-        totalDone += s.done;
-      }
-      const avgPercent = totalTasks > 0 ? Math.round((totalDone / totalTasks) * 100) : 0;
-      return { totalTasks, totalDone, avgPercent };
-    }
-
-    function getStreak() {
-      let streak = 0;
-      for (let i = appData.days.length - 1; i >= 0; i--) {
-        const s = getDayStats(appData.days[i]);
-        if (s.percent >= 70) streak++;
-        else if (s.total > 0) break;
-      }
-      return streak;
-    }
-
-    // ===================== RENDER: STATS =====================
-    function renderStats() {
-      const stats = getOverallStats();
-      const streak = getStreak();
-      const cards = [
-        { key: 'tasks', label: 'Görevler', value: `${stats.totalDone} / ${stats.totalTasks}`, icon: 'fa-list-check', color: 'accent', code: '#6366f1' },
-        { key: 'avg', label: 'Ortalama', value: stats.avgPercent + '%', icon: 'fa-percent', color: 'yellow', code: '#eab308' },
-        { key: 'streak', label: 'Seri', value: streak + ' gün', icon: 'fa-fire', color: 'rose', code: '#f43f5e' },
-      ];
-      document.getElementById('statsGrid').innerHTML = cards.map(c => `
-        <div class="stat-card ${c.color}" data-stat="${c.key}">
-          <div class="flex items-center gap-2 mb-3">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:${c.code}15">
-              <i class="fa-solid ${c.icon}" style="color:${c.code};font-size:12px"></i>
-            </div>
-            <span class="text-text-muted text-xs font-medium">${c.label}</span>
+  <!-- SUBJECT BREAKDOWN + OVERALL -->
+  <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,201,167,.1),transparent);margin-bottom:20px"></div>
+  <section style="margin-bottom:28px;animation:fadeUp .5s .10s ease both">
+    <div id="subjBreakCard" style="background:rgba(14,14,26,.92);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:22px;position:relative;overflow:hidden;">
+      <div class="prog-topbar" style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#00c9a7,#d4a020,#00c9a7);opacity:.5"></div>
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,201,167,.1)">
+            <i class="fa-solid fa-chart-bar" style="color:#00c9a7;font-size:13px"></i>
           </div>
-          <div class="stat-value text-text-primary text-xl sm:text-2xl font-bold font-mono">${c.value}</div>
+          <div>
+            <h3 class="font-display font-semibold text-sm" style="color:#eeeef8">Ders Bazlı İlerleme</h3>
+            <p class="text-xs" style="color:#48486a">Tüm günler boyunca ders başına tamamlanma</p>
+          </div>
         </div>
-      `).join('');
+        <span id="oPct" class="font-mono font-bold text-2xl" style="color:#00c9a7">0%</span>
+      </div>
+      <div class="prog-track mb-3">
+        <div id="oBar" class="prog-fill" style="width:0%;background:linear-gradient(90deg,#00c9a7,#d4a020)"></div>
+      </div>
+      <div class="flex justify-between text-xs mb-5" style="color:#48486a">
+        <span id="oDone">0 tamamlanan</span>
+        <span id="oTotal">0 toplam görev</span>
+      </div>
+      <div id="subjBars" class="space-y-3"></div>
+    </div>
+  </section>
 
-      statRefs.tasks = document.querySelector('[data-stat="tasks"] .stat-value');
-      statRefs.avg = document.querySelector('[data-stat="avg"] .stat-value');
-      statRefs.streak = document.querySelector('[data-stat="streak"] .stat-value');
+  <!-- FILTER + GRID -->
+  <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(0,201,167,.1),transparent);margin-bottom:20px"></div>
+  <section style="animation:fadeUp .5s .13s ease both">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:rgba(0,201,167,.1)">
+          <i class="fa-solid fa-calendar-days" style="color:#00c9a7;font-size:13px"></i>
+        </div>
+        <h2 class="font-display font-bold text-base" style="color:#eeeef8">Günler</h2>
+        <span id="visCount" class="font-mono text-xs" style="color:#48486a"></span>
+      </div>
+      <div class="ftabs" id="ftabs">
+        <div class="ftab active" data-f="all">Tümü</div>
+        <div class="ftab" data-f="empty">Boş</div>
+        <div class="ftab" data-f="inprogress">Devam</div>
+        <div class="ftab" data-f="done">Tamam ✓</div>
+      </div>
+    </div>
+    <div id="dayGrid"></div>
+  </section>
+</div>
 
-      document.getElementById('overallPercent').textContent = stats.avgPercent + '%';
-      document.getElementById('overallBar').style.width = stats.avgPercent + '%';
-      document.getElementById('totalCompleted').textContent = stats.totalDone + ' tamamlanan görev';
-      document.getElementById('totalTasks').textContent = stats.totalTasks + ' toplam görev';
-    }
+<!-- OVERLAY + SIDE PANEL -->
+<div id="overlay" class="overlay" onclick="closeSidePanel()"></div>
+<div id="sidePanel" class="side-panel">
+  <div class="sp-head">
+    <div class="flex items-center justify-between mb-4">
+      <button onclick="closeSidePanel()" class="btn btn-g text-xs py-2 px-3"><i class="fa-solid fa-arrow-left text-xs"></i> Kapat</button>
+      <div class="flex gap-1">
+        <button id="prevBtn" onclick="navDay(-1)" class="btn btn-g text-xs py-2 px-3"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+        <button id="nextBtn" onclick="navDay(1)" class="btn btn-g text-xs py-2 px-3"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div id="spBadge" class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0" style="background:rgba(0,201,167,.1)">
+        <span id="spNum" class="font-mono font-bold text-xl" style="color:#00c9a7">1</span>
+      </div>
+      <div class="min-w-0">
+        <h2 id="spTitle" class="font-display text-xl font-bold truncate" style="color:#eeeef8"></h2>
+        <p id="spSub" class="text-sm mt-0.5" style="color:#8080a0"></p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 mt-4">
+      <div class="flex-1 prog-track"><div id="spBar" class="prog-fill" style="width:0%;background:#00c9a7"></div></div>
+      <span id="spPct" class="font-mono font-bold text-sm" style="color:#00c9a7">0%</span>
+    </div>
+  </div>
+  <div class="sp-body" id="spBody"></div>
+</div>
 
-    function updateStats() {
-      const stats = getOverallStats();
-      const streak = getStreak();
-      if (statRefs.tasks) statRefs.tasks.textContent = `${stats.totalDone} / ${stats.totalTasks}`;
-      if (statRefs.avg) statRefs.avg.textContent = stats.avgPercent + '%';
-      if (statRefs.streak) statRefs.streak.textContent = streak + ' gün';
-      document.getElementById('overallPercent').textContent = stats.avgPercent + '%';
-      document.getElementById('overallBar').style.width = stats.avgPercent + '%';
-      document.getElementById('totalCompleted').textContent = stats.totalDone + ' tamamlanan görev';
-      document.getElementById('totalTasks').textContent = stats.totalTasks + ' toplam görev';
-    }
+<!-- TOAST -->
+<div id="toast" class="toast">
+  <i id="tIcon" class="fa-solid fa-check-circle" style="color:#10b981"></i>
+  <span id="tMsg">İşlem başarılı</span>
+</div>
 
-    // ===================== COLOR HELPERS =====================
-    function getCardColorClass(percent) {
-      if (percent === 0) return '';
-      if (percent <= 30) return 'red';
-      if (percent <= 70) return 'yellow';
-      return 'green';
-    }
-    function getGlowClass(percent) {
-      if (percent <= 30) return 'glow-red';
-      if (percent <= 70) return 'glow-yellow';
-      return 'glow-green';
-    }
-    function getRingColor(percent) {
-      if (percent === 0) return '#3a3a50';
-      if (percent <= 30) return '#ef4444';
-      if (percent <= 70) return '#eab308';
-      return '#22c55e';
-    }
+<!-- KEYBOARD SHORTCUTS MODAL -->
+<div id="kbModal" style="position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.85)" onclick="hideShortcuts()"></div>
+  <div style="position:relative;background:rgba(6,6,18,.98);border:1px solid rgba(0,201,167,.15);border-radius:22px;padding:28px;max-width:360px;width:100%;margin:16px;box-shadow:0 30px 80px rgba(0,0,0,.8),0 0 0 1px rgba(0,201,167,.07);animation:scaleIn .3s ease both;">
+    <h3 class="font-display font-bold text-lg mb-5" style="color:#eeeef8">Klavye Kısayolları</h3>
+    <div style="display:flex;flex-direction:column;gap:14px;font-size:14px">
+      <div class="flex justify-between items-center"><span style="color:#8080a0">Paneli kapat</span><kbd>Esc</kbd></div>
+      <div class="flex justify-between items-center"><span style="color:#8080a0">Önceki gün</span><kbd>← Sol</kbd></div>
+      <div class="flex justify-between items-center"><span style="color:#8080a0">Sonraki gün</span><kbd>→ Sağ</kbd></div>
+    </div>
+    <button onclick="hideShortcuts()" class="btn btn-g w-full mt-6 justify-center text-xs">Kapat</button>
+  </div>
+</div>
 
-    // ===================== RENDER: GRID =====================
-    function buildGrid() {
-      const grid = document.getElementById('dayGrid');
-      const frag = document.createDocumentFragment();
+<script>
+// ═══════════════════════════════════════
+//  CONSTANTS
+// ═══════════════════════════════════════
+const SUBJECTS = [
+  {key:'matematik', name:'Matematik', icon:'fa-square-root-variable', color:'#00c9a7'},
+  {key:'fizik',     name:'Fizik',     icon:'fa-atom',                  color:'#d4a020'},
+  {key:'kimya',     name:'Kimya',     icon:'fa-flask',                 color:'#f59e0b'},
+  {key:'biyoloji',  name:'Biyoloji',  icon:'fa-dna',                   color:'#10b981'},
+  {key:'geometri',  name:'Geometri',  icon:'fa-shapes',                color:'#f43f5e'},
+];
+const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const DAYS   = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+const START  = new Date(2026,4,5);
+const EXAM   = new Date(2026,5,20);
+const SKEY   = 'yks_planner_v5';
+const RING_C = 2*Math.PI*18;
+const QUOTES = [
+  {t:'Başarı, her gün tekrarlanan küçük çabaların toplamıdır.',    a:''},
+  {t:'Yorulduğunda dur, ama asla vazgeçme.',                        a:''},
+  {t:'Bugün ekilmeyen tohum, yarın meyve vermez.',                  a:'Türk Atasözü'},
+  {t:'Odaklanmış bir saat, dağınık üç saate bedeldir.',             a:''},
+  {t:'Çalışmak kaderin önüne geçer.',                               a:'Türk Atasözü'},
+  {t:'Hedefin seni çekiyor, motivasyon sadece iter.',               a:''},
+  {t:'Her büyük başarı, bir zamanlar imkânsız görünüyordu.',        a:''},
+  {t:'Sınav seni değil, sen sınavı seçiyorsun.',                   a:''},
+  {t:'Düşmanın senden akıllı olabilir, ama sen ondan çok çalışabilirsin.', a:''},
+  {t:'Bugünkü ter, yarınki zafer.',                                 a:''},
+];
+const MOODS = ['😴','😐','🙂','😊','🔥'];
 
-      for (let idx = 0; idx < appData.days.length; idx++) {
-        const day = appData.days[idx];
-        const date = getDateForDay(day.day);
-        const dateStr = formatDateShort(date);
-        const dayName = DAYS_TR[date.getDay()];
-        const todayFlag = isToday(date);
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+let appData = {days:[]};
+let selDay = null, savedScrollY = 0, saveTimer = null, activeFilter = 'all';
+let cardRefs = new Map(), spRefs = null, sEl = {};
+let audioCtx = null, qIdx = 0, qInterval = null, cdInterval = null;
+let notesTimer = null;
 
-        const el = document.createElement('div');
-        el.className = `day-card ${todayFlag ? 'today' : ''}`;
-        el.dataset.day = day.day;
-        el.style.opacity = '0';
-        el.style.animation = `fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) ${idx * 0.008}s forwards`;
+// ═══════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════
+function dateOf(n){const d=new Date(START);d.setDate(d.getDate()+(n-1));return d}
+function fmtFull(d){return`${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}, ${DAYS[d.getDay()]}`}
+function fmtShort(d){return`${d.getDate()} ${MONTHS[d.getMonth()]}`}
+function isToday(d){const n=new Date();return d.getDate()===n.getDate()&&d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear()}
+function esc(t){const div=document.createElement('div');div.textContent=t;return div.innerHTML}
+function fmtTime(ts){if(!ts)return'';const d=new Date(ts);return`${p2(d.getHours())}:${p2(d.getMinutes())}`}
+function p2(n){return String(n).padStart(2,'0')}
+function scheduleSave(){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(()=>localStorage.setItem(SKEY,JSON.stringify(appData)),400)}
+function getRingColor(p){if(p===0)return'#383858';if(p<=30)return'#ef4444';if(p<=70)return'#eab308';return'#22c55e'}
+function getHeatColor(p){if(p===0)return'rgba(255,255,255,.04)';if(p<=30)return'rgba(239,68,68,.38)';if(p<=70)return'rgba(234,179,8,.45)';return'rgba(34,197,94,.52)'}
+function getGlow(p){if(p<=0)return'';if(p<=30)return'glow-r';if(p<=70)return'glow-y';return'glow-g'}
 
-        el.innerHTML = `
-          <div class="flex items-start justify-between mb-2">
-            <div>
-              <div class="text-text-primary font-semibold text-sm">${dateStr}</div>
-              <div class="text-text-muted text-[11px]">${dayName} · ${day.day}. Gün</div>
-            </div>
-            <div class="flex flex-col items-end gap-1">
-              ${todayFlag ? '<span class="text-[10px] font-semibold text-accent bg-accent-dim px-2 py-0.5 rounded-full">BUGÜN</span>' : ''}
-              <div class="relative w-10 h-10 flex-shrink-0">
-                <svg class="progress-ring w-10 h-10" viewBox="0 0 40 40">
-                  <circle class="progress-ring-bg" cx="20" cy="20" r="18" fill="none" stroke-width="2.5"/>
-                  <circle class="progress-ring-fill" cx="20" cy="20" r="18" fill="none" stroke-width="2.5"
-                    stroke-linecap="round" stroke-dasharray="${RING_CIRCUMFERENCE.toFixed(1)}"
-                    stroke-dashoffset="${RING_CIRCUMFERENCE.toFixed(1)}" stroke="#3a3a50"/>
-                </svg>
-                <span class="day-ring-text absolute inset-0 flex items-center justify-center text-[9px] font-bold font-mono text-text-secondary">0%</span>
-              </div>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="day-done-text text-text-secondary text-xs font-medium">0/0 tamamlandı</span>
-          </div>
-          <div class="day-tags mt-3 pt-3 border-t border-white/5"></div>
-        `;
+// ═══════════════════════════════════════
+//  AUDIO
+// ═══════════════════════════════════════
+function ensAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume()}
+function playTick(){try{ensAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='sine';o.frequency.setValueAtTime(880,audioCtx.currentTime);o.frequency.exponentialRampToValueAtTime(1760,audioCtx.currentTime+.06);g.gain.setValueAtTime(.05,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.12);o.start();o.stop(audioCtx.currentTime+.12)}catch(e){}}
+function playWin(){try{ensAudio();[523.25,659.25,783.99,1046.5].forEach((f,i)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.type='sine';o.frequency.value=f;const t=audioCtx.currentTime+i*.1;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.06,t+.05);g.gain.exponentialRampToValueAtTime(.001,t+.3);o.start(t);o.stop(t+.3)})}catch(e){}}
 
-        frag.appendChild(el);
-
-        dayCardRefs.set(day.day, {
-          el,
-          ring: el.querySelector('.progress-ring-fill'),
-          percentText: el.querySelector('.day-ring-text'),
-          doneText: el.querySelector('.day-done-text'),
-          tagsContainer: el.querySelector('.day-tags'),
-        });
-      }
-
-      grid.appendChild(frag);
-
-      grid.addEventListener('click', (e) => {
-        const card = e.target.closest('.day-card');
-        if (card) openDay(parseInt(card.dataset.day));
-      });
-    }
-
-    function updateDayCard(dayNum) {
-      const ref = dayCardRefs.get(dayNum);
-      if (!ref) return;
-      const dayData = appData.days[dayNum - 1];
-      const stats = getDayStats(dayData);
-      const colorClass = getCardColorClass(stats.percent);
-      const glowClass = getGlowClass(stats.percent);
-      const ringColor = getRingColor(stats.percent);
-      const offset = RING_CIRCUMFERENCE - (stats.percent / 100) * RING_CIRCUMFERENCE;
-
-      ref.el.classList.remove('red', 'yellow', 'green', 'glow-red', 'glow-yellow', 'glow-green');
-      if (colorClass) ref.el.classList.add(colorClass);
-      ref.el.classList.add(glowClass);
-
-      if (selectedDay === dayNum) ref.el.classList.add('selected');
-      else ref.el.classList.remove('selected');
-
-      ref.ring.setAttribute('stroke-dashoffset', offset.toFixed(1));
-      ref.ring.setAttribute('stroke', ringColor);
-      ref.percentText.textContent = stats.percent + '%';
-      ref.doneText.textContent = `${stats.done}/${stats.total} tamamlandı`;
-
-      const activeSubjects = SUBJECTS.filter(s => (dayData.subjects[s.key] || []).length > 0);
-      if (activeSubjects.length > 0) {
-        ref.tagsContainer.innerHTML = activeSubjects.map(s =>
-          `<span class="subject-tag" style="background:${s.color}12;color:${s.color}">
-            <i class="fa-solid ${s.icon}" style="font-size:8px"></i>${s.name}
-          </span>`
-        ).join('');
-      } else {
-        ref.tagsContainer.innerHTML = '<span class="text-text-muted text-[11px] italic">Henüz görev eklenmedi</span>';
-      }
-    }
-
-    function updateAllDayCards() {
-      for (let i = 1; i <= 45; i++) updateDayCard(i);
-    }
-
-    // ===================== SIDE PANEL =====================
-    function openDay(dayNum) {
-      if (selectedDay === dayNum) return;
-      selectedDay = dayNum;
-      savedScrollY = window.scrollY;
-
-      const dayData = appData.days[dayNum - 1];
-      const stats = getDayStats(dayData);
-      const date = getDateForDay(dayNum);
-      const ringColor = getRingColor(stats.percent);
-
-      document.getElementById('spDayNum').textContent = dayNum;
-      document.getElementById('spDateTitle').textContent = formatDateFull(date);
-      document.getElementById('spDaySubtitle').textContent = `${dayNum}. Gün · ${stats.done}/${stats.total} görev tamamlandı`;
-      document.getElementById('spPercent').textContent = stats.percent + '%';
-      document.getElementById('spDayNum').style.color = ringColor;
-      document.getElementById('spPercent').style.color = ringColor;
-      document.getElementById('spDayBadge').style.background = ringColor + '15';
-
-      const bar = document.getElementById('spBar');
-      bar.style.width = stats.percent + '%';
-      bar.style.background = ringColor;
-
-      buildPanelSubjects(dayData);
-
-      document.getElementById('sidePanelOverlay').classList.add('active');
-      document.getElementById('sidePanel').classList.add('active');
-      document.body.style.overflow = 'hidden';
-
-      updateAllDayCards();
-    }
-
-    function closeSidePanel() {
-      document.getElementById('sidePanelOverlay').classList.remove('active');
-      document.getElementById('sidePanel').classList.remove('active');
-      document.body.style.overflow = '';
-      const prev = selectedDay;
-      selectedDay = null;
-      panelRefs = null;
-      if (prev) {
-        const ref = dayCardRefs.get(prev);
-        if (ref) ref.el.classList.remove('selected');
-      }
-      window.scrollTo({ top: savedScrollY, behavior: 'instant' });
-    }
-
-    function buildPanelSubjects(dayData) {
-      const container = document.getElementById('spSubjects');
-      panelRefs = { subjects: new Map() };
-      const frag = document.createDocumentFragment();
-
-      for (let i = 0; i < SUBJECTS.length; i++) {
-        const subj = SUBJECTS[i];
-        const tasks = dayData.subjects[subj.key] || [];
-        const doneCount = tasks.filter(t => t.done).length;
-        const totalCount = tasks.length;
-        const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
-
-        const panel = document.createElement('div');
-        panel.className = 'subject-panel mb-4 collapsed';
-        panel.dataset.subject = subj.key;
-        panel.innerHTML = `
-          <div class="subject-header" data-action="toggle-subject">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:${subj.color}12">
-                <i class="fa-solid ${subj.icon}" style="color:${subj.color};font-size:13px"></i>
-              </div>
-              <div>
-                <h3 class="text-text-primary font-semibold text-sm">${subj.name}</h3>
-                <p class="subject-done-text text-text-muted text-xs">${doneCount}/${totalCount} tamamlandı</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="subject-percent percent-text text-sm font-bold" style="color:${subj.color}">${pct}%</span>
-              <i class="fa-solid fa-chevron-down subject-chevron text-text-muted text-xs"></i>
-            </div>
-          </div>
-          <div class="subject-body">
-            <div class="subject-body-inner">
-              <div class="px-4 pb-1 pt-2">
-                <div class="progress-track">
-                  <div class="subject-bar progress-fill" style="width:${pct}%;background:${subj.color}"></div>
-                </div>
-              </div>
-              <div class="p-4 pt-3">
-                <div class="flex gap-2 mb-3">
-                  <input type="text" class="task-input" placeholder="Yeni görev ekle..." data-subject="${subj.key}">
-                  <button class="btn btn-primary flex-shrink-0 px-3" data-subject="${subj.key}">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                  </button>
-                </div>
-                <div class="subject-tasks flex flex-col gap-1.5 max-h-[240px] overflow-y-auto pr-1"></div>
-              </div>
-            </div>
-          </div>
-        `;
-
-        frag.appendChild(panel);
-
-        const taskList = panel.querySelector('.subject-tasks');
-        renderTaskList(taskList, tasks, subj.key);
-
-        panelRefs.subjects.set(subj.key, {
-          panel,
-          taskList,
-          progressBar: panel.querySelector('.subject-bar'),
-          percentText: panel.querySelector('.subject-percent'),
-          doneText: panel.querySelector('.subject-done-text'),
-          input: panel.querySelector('.task-input'),
-        });
-      }
-
-      container.innerHTML = '';
-      container.appendChild(frag);
-    }
-
-    function formatTime(ts) {
-      if (!ts) return '';
-      const d = new Date(ts);
-      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    }
-
-    function renderTaskList(container, tasks, subjectKey) {
-      if (tasks.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state py-6">
-            <i class="fa-regular fa-clipboard text-text-muted" style="font-size:28px;opacity:0.4"></i>
-            <p class="text-sm text-text-muted">Henüz görev eklenmemiş</p>
-          </div>`;
-        return;
-      }
-      const frag = document.createDocumentFragment();
-      for (let i = 0; i < tasks.length; i++) {
-        const t = tasks[i];
-        const timeHtml = t.done && t.completedAt ? `<span class="task-time">${formatTime(t.completedAt)}</span>` : '';
-        const item = document.createElement('div');
-        item.className = `task-item ${t.done ? 'done' : ''}`;
-        item.dataset.index = i;
-        item.innerHTML = `
-          <div class="task-checkbox ${t.done ? 'checked' : ''}" data-action="toggle" data-index="${i}"></div>
-          <span class="task-text text-sm text-text-primary flex-1 min-w-0 truncate">${escapeHtml(t.text)}</span>
-          ${timeHtml}
-          <div class="task-delete" data-action="delete" data-index="${i}">
-            <i class="fa-solid fa-xmark text-xs"></i>
-          </div>
-        `;
-        frag.appendChild(item);
-      }
-      container.innerHTML = '';
-      container.appendChild(frag);
-    }
-
-    // Event delegation for side panel
-    document.getElementById('spSubjects').addEventListener('click', (e) => {
-      const target = e.target.closest('[data-action]');
-      if (target && target.dataset.action === 'toggle-subject') {
-        const panel = target.closest('.subject-panel');
-        const wasCollapsed = panel.classList.contains('collapsed');
-        // Close all
-        panelRefs.subjects.forEach(ref => ref.panel.classList.add('collapsed'));
-        // Open clicked if it was collapsed
-        if (wasCollapsed) panel.classList.remove('collapsed');
-        return;
-      }
-      if (!target) {
-        const btn = e.target.closest('.btn-primary');
-        if (btn && btn.dataset.subject) {
-          const ref = panelRefs.subjects.get(btn.dataset.subject);
-          if (ref) addTask(btn.dataset.subject, ref.input);
-        }
-        return;
-      }
-      const action = target.dataset.action;
-      const index = parseInt(target.dataset.index);
-      const subjectKey = target.closest('.subject-panel').dataset.subject;
-      if (action === 'toggle') toggleTask(subjectKey, index);
-      else if (action === 'delete') deleteTask(subjectKey, index);
+// ═══════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════
+function initData(){
+  const saved=localStorage.getItem(SKEY);
+  if(saved){try{
+    appData=JSON.parse(saved);
+    if(!appData.days||appData.days.length!==45)throw 0;
+    appData.days.forEach(d=>{
+      SUBJECTS.forEach(s=>{if(!d.subjects[s.key])d.subjects[s.key]=[]});
+      if(!d.notes)d.notes='';
+      if(typeof d.studyHours!=='number')d.studyHours=0;
+      if(typeof d.mood!=='number')d.mood=-1;
     });
+    return;
+  }catch(e){}}
+  appData={days:[]};
+  for(let i=1;i<=45;i++){
+    const day={day:i,subjects:{},notes:'',studyHours:0,mood:-1};
+    SUBJECTS.forEach(s=>{day.subjects[s.key]=[]});
+    appData.days.push(day);
+  }
+  scheduleSave();
+}
 
-    document.getElementById('spSubjects').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && e.target.classList.contains('task-input')) {
-        const subjectKey = e.target.dataset.subject;
-        if (subjectKey) addTask(subjectKey, e.target);
-      }
+// ═══════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════
+function dayStats(d){let total=0,done=0;for(const s of SUBJECTS){const t=d.subjects[s.key]||[];total+=t.length;for(const x of t)if(x.done)done++}return{total,done,percent:total>0?Math.round((done/total)*100):0}}
+function overallStats(){let tt=0,td=0,th=0;for(const d of appData.days){const s=dayStats(d);tt+=s.total;td+=s.done;th+=d.studyHours||0}return{tt,td,th,avg:tt>0?Math.round((td/tt)*100):0}}
+function subjStats(){return SUBJECTS.map(s=>{let total=0,done=0;for(const d of appData.days){const t=d.subjects[s.key]||[];total+=t.length;for(const x of t)if(x.done)done++}return{...s,total,done,pct:total>0?Math.round((done/total)*100):0}})}
+function streak(){let s=0;const today=new Date();today.setHours(0,0,0,0);for(let i=44;i>=0;i--){const date=dateOf(i+1);if(date>today)continue;const st=dayStats(appData.days[i]);if(st.total>0&&st.percent>=70)s++;else if(st.total>0)break}return s}
+
+// ═══════════════════════════════════════
+//  COUNTDOWN
+// ═══════════════════════════════════════
+function updateCountdown(){
+  const el=document.getElementById('cdRow');if(!el)return;
+  const now=new Date(),exam=new Date(EXAM),diff=exam-now;
+  if(diff<=0){el.innerHTML=`<span class="font-mono text-sm" style="color:#48486a">Sınav geçti</span>`;return}
+  const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+  const u=(v,l,hi)=>`<div style="display:flex;flex-direction:column;align-items:center;padding:7px 14px;border-radius:12px;background:${hi?'rgba(0,201,167,.07)':'rgba(255,255,255,.03)'};border:1px solid ${hi?'rgba(0,201,167,.25)':'rgba(255,255,255,.06)'};${hi?'box-shadow:0 0 20px rgba(0,201,167,.08)':''}"><span class="font-mono font-bold" style="font-size:1.35rem;line-height:1;color:${hi?'#00c9a7':'#c0c0d8'};letter-spacing:-0.5px">${p2(v)}</span><span style="font-size:8px;text-transform:uppercase;letter-spacing:2px;color:${hi?'rgba(0,201,167,.5)':'#48486a'};margin-top:3px">${l}</span></div>`;
+  el.innerHTML=u(d,'gün',true)+'<span style="color:rgba(0,201,167,.2);font-size:18px;align-self:center;padding:0 2px">·</span>'+u(h,'saat')+u(m,'dak')+u(s,'sn')+`<span class="font-mono text-xs self-center" style="color:rgba(0,201,167,.35);letter-spacing:2px;margin-left:6px;text-transform:uppercase;font-size:9px">sınava kaldı</span>`;
+}
+
+// ═══════════════════════════════════════
+//  QUOTES
+// ═══════════════════════════════════════
+function nextQuote(){qIdx=(qIdx+Math.floor(Math.random()*(QUOTES.length-1))+1)%QUOTES.length;const q=QUOTES[qIdx];const el=document.getElementById('qText'),el2=document.getElementById('qAuthor');if(!el)return;el.style.opacity='0';el.style.transform='translateY(8px)';setTimeout(()=>{el.textContent=`"${q.t}"`;el2.textContent=q.a?`— ${q.a}`:'';el.style.opacity='1';el.style.transform='translateY(0)'},200)}
+function initQuotes(){const q=QUOTES[0];document.getElementById('qText').textContent=`"${q.t}"`;document.getElementById('qText').style.transition='opacity .4s,transform .4s';document.getElementById('qText').onclick=nextQuote;qInterval=setInterval(nextQuote,9000)}
+
+// ═══════════════════════════════════════
+//  RENDER STATS
+// ═══════════════════════════════════════
+function renderStats(){
+  const st=overallStats(),s=streak(),active=appData.days.filter(d=>dayStats(d).total>0).length;
+  const cards=[
+    {key:'done',cls:'sa',icon:'fa-list-check', label:'Görevler',   val:`${st.td}/${st.tt}`,  c:'#00c9a7'},
+    {key:'avg', cls:'st',icon:'fa-percent',    label:'Ortalama',   val:st.avg+'%',             c:'#d4a020'},
+    {key:'stk', cls:'sw',icon:'fa-fire',       label:'Seri',       val:streak()+' gün',        c:'#f59e0b'},
+    {key:'hrs', cls:'se',icon:'fa-clock',      label:'Çalışma',    val:st.th+'s',              c:'#10b981'},
+  ];
+  document.getElementById('statsGrid').innerHTML=cards.map(c=>`
+    <div class="stat-card ${c.cls}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px">
+        <span class="section-label" style="font-size:9px">${c.label}</span>
+        <div style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:${c.c}12;border:1px solid ${c.c}20;flex-shrink:0">
+          <i class="fa-solid ${c.icon}" style="color:${c.c};font-size:12px"></i>
+        </div>
+      </div>
+      <div class="font-mono font-bold" style="font-size:2rem;line-height:1;color:#eeeef8;letter-spacing:-1px" data-stat="${c.key}">${c.val}</div>
+    </div>`).join('');
+  document.querySelectorAll('[data-stat]').forEach(el=>sEl[el.dataset.stat]=el);
+  renderSubjBars();updateOverall(st);renderHeatmap();
+}
+function updateStats(){
+  const st=overallStats(),s=streak(),active=appData.days.filter(d=>dayStats(d).total>0).length;
+  if(sEl.done)sEl.done.textContent=`${st.td}/${st.tt}`;
+  if(sEl.avg)sEl.avg.textContent=st.avg+'%';
+  if(sEl.stk)sEl.stk.textContent=s+' gün';
+  if(sEl.hrs)sEl.hrs.textContent=st.th+'s';
+  if(sEl.days)sEl.days.textContent=active+'/45';
+  updateOverall(st);renderSubjBars();renderHeatmap();
+}
+function updateOverall(st){
+  document.getElementById('oPct').textContent=st.avg+'%';
+  document.getElementById('oBar').style.width=st.avg+'%';
+  document.getElementById('oDone').textContent=st.td+' tamamlanan';
+  document.getElementById('oTotal').textContent=st.tt+' toplam görev';
+}
+function renderSubjBars(){
+  const ss=subjStats();
+  document.getElementById('subjBars').innerHTML=ss.map(s=>`
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="display:flex;align-items:center;gap:8px;width:100px;flex-shrink:0">
+        <i class="fa-solid ${s.icon}" style="color:${s.color};font-size:10px;width:12px;text-align:center"></i>
+        <span style="font-size:12px;color:#8080a0;font-weight:500;truncate">${s.name}</span>
+      </div>
+      <div class="prog-track flex-1"><div class="prog-fill" style="width:${s.pct}%;background:${s.color};transform-origin:left;animation:barIn .8s cubic-bezier(.16,1,.3,1) both"></div></div>
+      <span class="font-mono text-xs" style="color:#48486a;width:36px;text-align:right">${s.done}/${s.total}</span>
+      <span class="font-mono font-bold text-xs" style="color:${s.color};width:32px;text-align:right">${s.pct}%</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════
+//  HEATMAP
+// ═══════════════════════════════════════
+function renderHeatmap(){
+  const hm=document.getElementById('heatmap');hm.innerHTML='';
+  for(let i=0;i<appData.days.length;i++){
+    const d=appData.days[i],st=dayStats(d);
+    const cell=document.createElement('div');
+    cell.className='hm-cell';
+    cell.style.background=getHeatColor(st.percent);
+    cell.title=`${fmtShort(dateOf(d.day))} · Gün ${d.day}: %${st.percent}`;
+    cell.onclick=()=>openDay(d.day);
+    hm.appendChild(cell);
+  }
+}
+
+// ═══════════════════════════════════════
+//  DAY GRID
+// ═══════════════════════════════════════
+function buildGrid(){
+  const grid=document.getElementById('dayGrid');grid.innerHTML='';
+  for(let w=0;w<Math.ceil(45/7);w++){
+    const s=w*7+1,e=Math.min(s+6,45);
+    const wh=document.createElement('div');
+    wh.className='week-hdr';
+    wh.style.animation=`fadeUp .4s ${w*.05}s ease both`;
+    wh.innerHTML=`<div class="week-line"></div><span class="week-lbl">${w+1}. Hafta · ${fmtShort(dateOf(s))} – ${fmtShort(dateOf(e))}</span><div class="week-line"></div>`;
+    grid.appendChild(wh);
+    const wg=document.createElement('div');
+    wg.className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mb-2';
+    wg.style.contentVisibility = 'auto';
+    wg.dataset.week=w;
+    for(let d=s;d<=e;d++){
+      const dd=appData.days[d-1],date=dateOf(d),tod=isToday(date);
+      const card=document.createElement('div');
+      card.className=`day-card${tod?' today':''}`;
+      card.dataset.day=d;
+      card.style.animation=`fadeUp .4s cubic-bezier(.16,1,.3,1) ${(d-1)*.007}s both`;
+      card.innerHTML=`
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div class="font-display font-semibold" style="font-size:1rem;color:#eeeef8;letter-spacing:-.2px">${fmtShort(date)}</div>
+            <div style="font-size:10px;color:rgba(0,201,167,.4);margin-top:3px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase">${DAYS[date.getDay()].substring(0,3)} · ${d}. GÜN</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+            ${tod?'<span class="font-mono font-bold text-[10px]" style="color:#00c9a7;background:rgba(0,201,167,.1);padding:2px 8px;border-radius:999px">BUGÜN</span>':''}
+            <div style="position:relative;width:44px;height:44px;flex-shrink:0">
+              <svg class="ring-svg" style="width:44px;height:44px" viewBox="0 0 40 40">
+                <circle class="ring-bg" cx="20" cy="20" r="18" fill="none" stroke-width="2.5"/>
+                <circle class="ring-fill" cx="20" cy="20" r="18" fill="none" stroke-width="2.5"
+                  stroke-linecap="round" stroke-dasharray="${RING_C.toFixed(1)}" stroke-dashoffset="${RING_C.toFixed(1)}" stroke="#383858"/>
+              </svg>
+              <span class="day-pct font-mono font-bold" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;color:#48486a">0%</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+          <span class="day-done text-xs font-medium" style="color:#8080a0">0/0 görev</span>
+          <span class="day-hrs font-mono" style="display:none;font-size:10px;color:#48486a"></span>
+          <span class="day-mood" style="display:none;margin-left:auto;font-size:14px"></span>
+        </div>
+        <div class="day-tags" style="padding-top:8px;border-top:1px solid rgba(255,255,255,.04)"></div>`;
+      wg.appendChild(card);
+      cardRefs.set(d,{el:card,ring:card.querySelector('.ring-fill'),pct:card.querySelector('.day-pct'),done:card.querySelector('.day-done'),hrs:card.querySelector('.day-hrs'),mood:card.querySelector('.day-mood'),tags:card.querySelector('.day-tags')});
+    }
+    grid.appendChild(wg);
+  }
+  grid.addEventListener('click',e=>{const c=e.target.closest('.day-card');if(c)openDay(parseInt(c.dataset.day))});
+}
+
+function updateCard(n){
+  const ref=cardRefs.get(n);if(!ref)return;
+  const dd=appData.days[n-1],st=dayStats(dd),color=getRingColor(st.percent),glow=getGlow(st.percent),offset=RING_C-(st.percent/100)*RING_C;
+  ref.el.classList.remove('glow-r','glow-y','glow-g');if(glow)ref.el.classList.add(glow);
+  ref.el.classList.toggle('selected',selDay===n);
+  ref.ring.setAttribute('stroke-dashoffset',offset.toFixed(1));ref.ring.setAttribute('stroke',color);
+  ref.pct.textContent=st.percent+'%';ref.pct.style.color=color;
+  ref.done.textContent=`${st.done}/${st.total} görev`;
+  if(dd.studyHours>0){ref.hrs.textContent=`⏱ ${dd.studyHours}s`;ref.hrs.style.display=''}else ref.hrs.style.display='none';
+  if(dd.mood>=0){ref.mood.textContent=MOODS[dd.mood];ref.mood.style.display=''}else ref.mood.style.display='none';
+  const active=SUBJECTS.filter(s=>(dd.subjects[s.key]||[]).length>0);
+  ref.tags.innerHTML=active.length>0?`<div style="display:flex;flex-wrap:wrap;gap:4px">${active.map(s=>`<span class="stag" style="background:${s.color}12;color:${s.color}"><i class="fa-solid ${s.icon}" style="font-size:8px"></i>${s.name}</span>`).join('')}</div>`:'<span style="font-size:11px;color:#48486a;font-style:italic">Henüz görev eklenmedi</span>';
+  applyFilterCard(ref.el,st);
+}
+function updateAllCards(){for(let i=1;i<=45;i++)updateCard(i)}
+
+// ═══════════════════════════════════════
+//  FILTER
+// ═══════════════════════════════════════
+document.getElementById('ftabs').addEventListener('click',e=>{
+  const tab=e.target.closest('.ftab');if(!tab)return;
+  activeFilter=tab.dataset.f;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.toggle('active',t.dataset.f===activeFilter));
+  applyFilter();
+});
+function checkFilter(st){if(activeFilter==='all')return true;if(activeFilter==='empty')return st.total===0;if(activeFilter==='inprogress')return st.total>0&&st.percent<100;if(activeFilter==='done')return st.percent===100&&st.total>0;return true}
+function applyFilterCard(el,st){el.style.display=checkFilter(st)?'':'none'}
+function applyFilter(){
+  let vis=0;
+  for(let i=1;i<=45;i++){const ref=cardRefs.get(i);if(!ref)continue;const st=dayStats(appData.days[i-1]);const show=checkFilter(st);ref.el.style.display=show?'':'none';if(show)vis++}
+  document.getElementById('visCount').textContent=`(${vis} gün)`;
+  document.querySelectorAll('[data-week]').forEach(wg=>{
+    const hasVis=[...wg.querySelectorAll('.day-card')].some(c=>c.style.display!=='none');
+    wg.style.display=hasVis?'':'none';
+    const hdr=wg.previousElementSibling;if(hdr&&hdr.classList.contains('week-hdr'))hdr.style.display=hasVis?'':'none';
+  });
+}
+
+// ═══════════════════════════════════════
+//  SIDE PANEL
+// ═══════════════════════════════════════
+function openDay(n){
+  selDay=n;savedScrollY=window.scrollY;
+  const dd=appData.days[n-1];
+  updateSpHead(n,dd);buildSpBody(dd,n);
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sidePanel').classList.add('open');
+  document.body.style.overflow='hidden';
+  updateAllCards();
+  const pb=document.getElementById('prevBtn'),nb=document.getElementById('nextBtn');
+  pb.disabled=n<=1;nb.disabled=n>=45;pb.style.opacity=n<=1?'.3':'1';nb.style.opacity=n>=45?'.3':'1';
+}
+function navDay(dir){if(!selDay)return;const next=selDay+dir;if(next<1||next>45)return;openDay(next)}
+function closeSidePanel(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('sidePanel').classList.remove('open');
+  document.body.style.overflow='';
+  const prev=selDay;selDay=null;spRefs=null;
+  if(prev){const ref=cardRefs.get(prev);if(ref)ref.el.classList.remove('selected')}
+  window.scrollTo({top:savedScrollY,behavior:'instant'});
+}
+function updateSpHead(n,dd){
+  const st=dayStats(dd),color=getRingColor(st.percent),date=dateOf(n);
+  document.getElementById('spNum').textContent=n;document.getElementById('spNum').style.color=color;
+  document.getElementById('spBadge').style.background=color+'15';
+  document.getElementById('spTitle').textContent=fmtFull(date);
+  document.getElementById('spSub').textContent=`${n}. Gün · ${st.done}/${st.total} görev tamamlandı`;
+  document.getElementById('spPct').textContent=st.percent+'%';document.getElementById('spPct').style.color=color;
+  document.getElementById('spBar').style.width=st.percent+'%';document.getElementById('spBar').style.background=color;
+}
+
+// ═══════════════════════════════════════
+//  PANEL BODY
+// ═══════════════════════════════════════
+function buildSpBody(dd,n){
+  const container=document.getElementById('spBody');
+  spRefs={subjects:new Map()};
+  container.innerHTML=`
+    <!-- MOOD + HOURS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.055);border-radius:16px;padding:16px">
+        <p class="section-label" style="margin-bottom:12px">Ruh Hali</p>
+        <div id="moodPicker" style="display:flex;justify-content:space-between">
+          ${MOODS.map((m,i)=>`<button class="mood-btn${dd.mood===i?' sel':''}" data-mood="${i}" onclick="setMood(${i})">${m}</button>`).join('')}
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.055);border-radius:16px;padding:16px">
+        <p class="section-label" style="margin-bottom:12px">Çalışma Saati</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+          <button class="hrs-btn" onclick="chgHrs(-.5)"><i class="fa-solid fa-minus text-xs"></i></button>
+          <span id="hrsDisp" class="font-mono font-bold text-2xl" style="color:#eeeef8;min-width:2.5rem;text-align:center">${dd.studyHours||0}</span>
+          <button class="hrs-btn" onclick="chgHrs(.5)"><i class="fa-solid fa-plus text-xs"></i></button>
+        </div>
+        <p style="text-align:center;font-size:11px;color:#48486a;margin-top:4px">saat</p>
+      </div>
+    </div>
+
+    <!-- SUBJECTS -->
+    <p class="section-label" style="margin-bottom:12px">Dersler</p>
+    <div id="subjList" style="display:flex;flex-direction:column;gap:12px"></div>
+
+    <!-- NOTES -->
+    <div style="margin-top:20px">
+      <p class="section-label" style="margin-bottom:8px">Günlük Notlar</p>
+      <textarea id="dayNotes" class="notes-ta" maxlength="500" placeholder="Bu güne ait notlarını buraya yaz..." oninput="saveNotes(this.value)">${esc(dd.notes||'')}</textarea>
+      <p style="text-align:right;font-size:11px;color:#48486a;margin-top:4px" id="notesChars">${(dd.notes||'').length} / 500</p>
+    </div>
+  `;
+  buildSubjList(dd);
+  // Auto-open first subject
+  const firstRef=[...spRefs.subjects.values()][0];
+  if(firstRef)firstRef.panel.classList.remove('collapsed');
+}
+
+function buildSubjList(dd){
+  const container=document.getElementById('subjList');if(!container)return;
+  const frag=document.createDocumentFragment();
+  for(const subj of SUBJECTS){
+    const tasks=dd.subjects[subj.key]||[],doneC=tasks.filter(t=>t.done).length,pct=tasks.length>0?Math.round((doneC/tasks.length)*100):0;
+    const panel=document.createElement('div');panel.className='subj-panel collapsed';panel.dataset.subject=subj.key;
+    panel.innerHTML=`
+      <div class="subj-header">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:${subj.color}12">
+            <i class="fa-solid ${subj.icon}" style="color:${subj.color};font-size:13px"></i>
+          </div>
+          <div>
+            <h3 class="font-display font-semibold text-sm" style="color:#eeeef8">${subj.name}</h3>
+            <p class="sj-done text-xs" style="color:#48486a">${doneC}/${tasks.length} tamamlandı</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="sj-pct font-mono font-bold text-sm" style="color:${subj.color}">${pct}%</span>
+          <i class="fa-solid fa-chevron-down subj-chev" style="color:#48486a;font-size:11px"></i>
+        </div>
+      </div>
+      <div class="subj-body"><div class="subj-body-inner">
+        <div style="padding:0 16px 4px 16px;padding-top:8px">
+          <div class="prog-track"><div class="sj-bar prog-fill" style="width:${pct}%;background:${subj.color}"></div></div>
+        </div>
+        <div style="padding:12px 16px">
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <input type="text" class="task-input" placeholder="Görev ekle..." data-subject="${subj.key}" maxlength="100">
+            <button class="btn btn-p flex-shrink-0 px-3 py-2" data-subject="${subj.key}" data-action="add"><i class="fa-solid fa-plus text-xs"></i></button>
+          </div>
+          <div class="sj-tasks" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;padding-right:2px"></div>
+        </div>
+      </div></div>`;
+    frag.appendChild(panel);
+    const taskList=panel.querySelector('.sj-tasks');
+    renderTasks(taskList,tasks,subj.key);
+    spRefs.subjects.set(subj.key,{panel,taskList,bar:panel.querySelector('.sj-bar'),pctEl:panel.querySelector('.sj-pct'),doneEl:panel.querySelector('.sj-done'),input:panel.querySelector('.task-input')});
+  }
+  container.innerHTML='';container.appendChild(frag);
+}
+
+function renderTasks(container,tasks,subjKey){
+  if(tasks.length===0){container.innerHTML=`<div class="empty"><i class="fa-regular fa-clipboard" style="font-size:24px;opacity:.2"></i><span class="text-sm">Henüz görev yok</span></div>`;return}
+  const frag=document.createDocumentFragment();
+  tasks.forEach((t,i)=>{
+    const item=document.createElement('div');item.className=`task-item${t.done?' done':''}`;item.dataset.index=i;
+    item.innerHTML=`
+      <div class="task-cb${t.done?' checked':''}" data-action="toggle" data-index="${i}"></div>
+      <span class="task-lbl text-sm flex-1" style="color:#eeeef8;min-width:0;word-break:break-word;line-height:1.45">${esc(t.text)}</span>
+      ${t.done&&t.completedAt?`<span class="task-time">${fmtTime(t.completedAt)}</span>`:''}
+      <div class="task-del" data-action="delete" data-index="${i}"><i class="fa-solid fa-xmark text-xs"></i></div>`;
+    frag.appendChild(item);
+  });
+  container.innerHTML='';container.appendChild(frag);
+}
+
+// Panel body event delegation
+document.getElementById('spBody').addEventListener('click',e=>{
+  if(!spRefs)return;
+  // Subject header toggle
+  const sh=e.target.closest('.subj-header');
+  if(sh){const p=sh.closest('.subj-panel');if(p){const c=p.classList.contains('collapsed');spRefs.subjects.forEach(r=>r.panel.classList.add('collapsed'));if(c)p.classList.remove('collapsed')}return}
+  // Add task button
+  const ab=e.target.closest('[data-action="add"]');
+  if(ab){const ref=spRefs.subjects.get(ab.dataset.subject);if(ref)addTask(ab.dataset.subject,ref.input);return}
+  // Checkbox
+  const cb=e.target.closest('.task-cb');
+  if(cb&&cb.dataset.index!==undefined){const p=cb.closest('.subj-panel');if(p)toggleTask(p.dataset.subject,parseInt(cb.dataset.index));return}
+  // Delete
+  const db=e.target.closest('.task-del');
+  if(db&&db.dataset.index!==undefined){const p=db.closest('.subj-panel');if(p)deleteTask(p.dataset.subject,parseInt(db.dataset.index));return}
+});
+document.getElementById('spBody').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.classList.contains('task-input')){
+    const ref=spRefs&&spRefs.subjects.get(e.target.dataset.subject);if(ref)addTask(e.target.dataset.subject,ref.input);
+  }
+});
+
+// ═══════════════════════════════════════
+//  TASK OPS
+// ═══════════════════════════════════════
+function addTask(subj,inputEl){
+  const text=inputEl.value.trim();if(!text||!selDay)return;
+  appData.days[selDay-1].subjects[subj].push({text,done:false,completedAt:null});
+  inputEl.value='';scheduleSave();refreshPanel();
+}
+function toggleTask(subj,idx){
+  if(!selDay)return;
+  const dd=appData.days[selDay-1],task=dd.subjects[subj][idx],wasDone=task.done;
+  task.done=!wasDone;task.completedAt=task.done?Date.now():null;
+  if(!wasDone)playTick();
+  scheduleSave();
+  const st=dayStats(dd);
+  if(!wasDone&&st.percent===100&&st.total>0){setTimeout(triggerConfetti,100);playWin();showToast('Mükemmel! Tüm görevler tamamlandı! 🎉','fa-trophy','#f59e0b')}
+  refreshPanel();
+}
+function deleteTask(subj,idx){
+  if(!selDay)return;
+  appData.days[selDay-1].subjects[subj].splice(idx,1);scheduleSave();refreshPanel();
+}
+function refreshPanel(){
+  if(!selDay||!spRefs)return;
+  const dd=appData.days[selDay-1],st=dayStats(dd),color=getRingColor(st.percent);
+  document.getElementById('spSub').textContent=`${selDay}. Gün · ${st.done}/${st.total} görev tamamlandı`;
+  document.getElementById('spPct').textContent=st.percent+'%';document.getElementById('spPct').style.color=color;
+  document.getElementById('spNum').style.color=color;document.getElementById('spBadge').style.background=color+'15';
+  document.getElementById('spBar').style.width=st.percent+'%';document.getElementById('spBar').style.background=color;
+  for(const subj of SUBJECTS){
+    const ref=spRefs.subjects.get(subj.key);if(!ref)continue;
+    const tasks=dd.subjects[subj.key]||[],doneC=tasks.filter(t=>t.done).length,pct=tasks.length>0?Math.round((doneC/tasks.length)*100):0;
+    ref.doneEl.textContent=`${doneC}/${tasks.length} tamamlandı`;ref.pctEl.textContent=pct+'%';ref.bar.style.width=pct+'%';
+    const items=ref.taskList.querySelectorAll('.task-item');
+    if(items.length!==tasks.length){renderTasks(ref.taskList,tasks,subj.key)}
+    else items.forEach((item,j)=>{
+      const t=tasks[j],cb=item.querySelector('.task-cb'),te=item.querySelector('.task-time');
+      item.classList.toggle('done',t.done);cb.classList.toggle('checked',t.done);
+      if(t.done&&t.completedAt&&!te){const s=document.createElement('span');s.className='task-time';s.textContent=fmtTime(t.completedAt);item.insertBefore(s,item.querySelector('.task-del'))}
+      else if(!t.done&&te)te.remove();
     });
+  }
+  updateCard(selDay);updateStats();
+}
 
-    // ===================== TASK OPERATIONS =====================
-    function addTask(subjectKey, inputEl) {
-      const text = inputEl.value.trim();
-      if (!text || !selectedDay) return;
-      const dayData = appData.days[selectedDay - 1];
-      dayData.subjects[subjectKey].push({ text, done: false, completedAt: null });
-      inputEl.value = '';
-      scheduleSave();
-      refreshAfterChange();
-    }
+// ═══════════════════════════════════════
+//  MOOD / HOURS / NOTES
+// ═══════════════════════════════════════
+function setMood(idx){if(!selDay)return;appData.days[selDay-1].mood=idx;scheduleSave();document.querySelectorAll('.mood-btn').forEach((b,i)=>b.classList.toggle('sel',i===idx));updateCard(selDay)}
+function chgHrs(delta){if(!selDay)return;const d=appData.days[selDay-1];d.studyHours=Math.max(0,Math.min(24,Math.round(((d.studyHours||0)+delta)*2)/2));const el=document.getElementById('hrsDisp');if(el)el.textContent=d.studyHours;scheduleSave();updateCard(selDay);updateStats()}
+function saveNotes(v){if(!selDay)return;const t=v.slice(0,500);appData.days[selDay-1].notes=t;const el=document.getElementById('notesChars');if(el)el.textContent=`${t.length} / 500`;if(notesTimer)clearTimeout(notesTimer);notesTimer=setTimeout(scheduleSave,500)}
 
-    function toggleTask(subjectKey, taskIdx) {
-      if (!selectedDay) return;
-      const dayData = appData.days[selectedDay - 1];
-      const task = dayData.subjects[subjectKey][taskIdx];
-      const wasDone = task.done;
-      task.done = !wasDone;
-      task.completedAt = task.done ? Date.now() : null;
-      if (!wasDone) playTickSound();
-      scheduleSave();
-      refreshAfterChange();
-    }
 
-    function deleteTask(subjectKey, taskIdx) {
-      if (!selectedDay) return;
-      const dayData = appData.days[selectedDay - 1];
-      dayData.subjects[subjectKey].splice(taskIdx, 1);
-      scheduleSave();
-      refreshAfterChange();
-    }
+// ═══════════════════════════════════════
+//  CONFETTI
+// ═══════════════════════════════════════
+function triggerConfetti(){
+  const colors=['#00c9a7','#d4a020','#10b981','#f59e0b','#f43f5e','#a855f7','#fbbf24','#38bdf8'];
+  for(let i=0;i<40;i++){
+    const p=document.createElement('div'),c=colors[i%colors.length],x=Math.random()*100,sz=Math.random()*10+5,dur=Math.random()*2.5+1.8,del=Math.random()*.7,circ=Math.random()>.4;
+    p.style.cssText=`position:fixed;left:${x}vw;top:-30px;width:${sz}px;height:${sz}px;background:${c};border-radius:${circ?'50%':'3px'};z-index:9999;pointer-events:none;animation:confetti ${dur}s ${del}s ease-in forwards;transform:rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),(dur+del)*1000+200);
+  }
+}
 
-    function refreshAfterChange() {
-      if (!selectedDay) return;
-      const dayData = appData.days[selectedDay - 1];
-      const stats = getDayStats(dayData);
-      const ringColor = getRingColor(stats.percent);
+// ═══════════════════════════════════════
+//  EXPORT / IMPORT
+// ═══════════════════════════════════════
+function exportData(){
+  const blob=new Blob([JSON.stringify(appData,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=`yks_planner_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  showToast('Veriler dışa aktarıldı','fa-download','#00c9a7');
+}
+function importData(event){
+  const file=event.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{try{
+    const data=JSON.parse(e.target.result);
+    if(!data.days||data.days.length!==45)throw 0;
+    appData=data;
+    SUBJECTS.forEach(s=>appData.days.forEach(d=>{
+      if(!d.subjects[s.key])d.subjects[s.key]=[];
+      if(!d.notes)d.notes='';if(typeof d.studyHours!=='number')d.studyHours=0;if(typeof d.mood!=='number')d.mood=-1;
+    }));
+    scheduleSave();updateAllCards();updateStats();
+    if(selDay){const dd=appData.days[selDay-1];buildSubjList(dd);updateSpHead(selDay,dd)}
+    showToast('Veriler içe aktarıldı','fa-upload','#10b981');
+  }catch(e){showToast('Geçersiz dosya formatı','fa-triangle-exclamation','#ef4444')}};
+  reader.readAsText(file);event.target.value='';
+}
 
-      document.getElementById('spDaySubtitle').textContent = `${selectedDay}. Gün · ${stats.done}/${stats.total} görev tamamlandı`;
-      document.getElementById('spPercent').textContent = stats.percent + '%';
-      document.getElementById('spPercent').style.color = ringColor;
-      document.getElementById('spDayNum').style.color = ringColor;
-      document.getElementById('spDayBadge').style.background = ringColor + '15';
-      const bar = document.getElementById('spBar');
-      bar.style.width = stats.percent + '%';
-      bar.style.background = ringColor;
+// ═══════════════════════════════════════
+//  TOAST + SHORTCUTS
+// ═══════════════════════════════════════
+let tTimer=null;
+function showToast(msg,icon,color){
+  const t=document.getElementById('toast'),ic=document.getElementById('tIcon'),mg=document.getElementById('tMsg');
+  ic.className=`fa-solid ${icon}`;ic.style.color=color;mg.textContent=msg;t.classList.add('show');
+  if(tTimer)clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+function showShortcuts(){const m=document.getElementById('kbModal');m.style.opacity='1';m.style.pointerEvents='auto'}
+function hideShortcuts(){const m=document.getElementById('kbModal');m.style.opacity='0';m.style.pointerEvents='none'}
 
-      for (let i = 0; i < SUBJECTS.length; i++) {
-        const subj = SUBJECTS[i];
-        const ref = panelRefs.subjects.get(subj.key);
-        if (!ref) continue;
-        const tasks = dayData.subjects[subj.key] || [];
-        const doneCount = tasks.filter(t => t.done).length;
-        const totalCount = tasks.length;
-        const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+// ═══════════════════════════════════════
+//  KEYBOARD
+// ═══════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('kbModal').style.opacity==='1'){if(e.key==='Escape')hideShortcuts();return}
+  if(e.key==='Escape'&&selDay){closeSidePanel();return}
+  if(e.key==='ArrowLeft'&&selDay&&!e.target.matches('input,textarea')){navDay(-1);return}
+  if(e.key==='ArrowRight'&&selDay&&!e.target.matches('input,textarea')){navDay(1);return}
+});
 
-        ref.doneText.textContent = `${doneCount}/${totalCount} tamamlandı`;
-        ref.percentText.textContent = pct + '%';
-        ref.progressBar.style.width = pct + '%';
-
-        const currentItems = ref.taskList.querySelectorAll('.task-item');
-        if (currentItems.length !== tasks.length) {
-          renderTaskList(ref.taskList, tasks, subj.key);
-        } else {
-          for (let j = 0; j < currentItems.length; j++) {
-            const item = currentItems[j];
-            const cb = item.querySelector('.task-checkbox');
-            const timeEl = item.querySelector('.task-time');
-            const t = tasks[j];
-            if (t.done) {
-              item.classList.add('done');
-              cb.classList.add('checked');
-              if (t.completedAt && !timeEl) {
-                const span = document.createElement('span');
-                span.className = 'task-time';
-                span.textContent = formatTime(t.completedAt);
-                item.insertBefore(span, item.querySelector('.task-delete'));
-              }
-            } else {
-              item.classList.remove('done');
-              cb.classList.remove('checked');
-              if (timeEl) timeEl.remove();
-            }
-          }
-        }
-      }
-
-      updateDayCard(selectedDay);
-      updateStats();
-    }
-
-    // ===================== EXPORT / IMPORT =====================
-    function exportData() {
-      const dataStr = JSON.stringify(appData, null, 2);
-      const blob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `yks_planner_${new Date().toISOString().slice(0,10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast('Veriler indirildi', 'fa-download', '#6366f1');
-    }
-
-    function importData(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (!data.days || data.days.length !== 45) throw new Error('Invalid');
-          appData = data;
-          SUBJECTS.forEach(s => {
-            appData.days.forEach(d => { if (!d.subjects[s.key]) d.subjects[s.key] = []; });
-          });
-          scheduleSave();
-          updateAllDayCards();
-          updateStats();
-          if (selectedDay) {
-            const dayData = appData.days[selectedDay - 1];
-            buildPanelSubjects(dayData);
-            const stats = getDayStats(dayData);
-            const ringColor = getRingColor(stats.percent);
-            document.getElementById('spDaySubtitle').textContent = `${selectedDay}. Gün · ${stats.done}/${stats.total} görev tamamlandı`;
-            document.getElementById('spPercent').textContent = stats.percent + '%';
-            document.getElementById('spPercent').style.color = ringColor;
-            document.getElementById('spDayNum').style.color = ringColor;
-            document.getElementById('spBar').style.width = stats.percent + '%';
-            document.getElementById('spBar').style.background = ringColor;
-          }
-          showToast('Veriler yüklendi', 'fa-upload', '#22c55e');
-        } catch (err) {
-          showToast('Geçersiz dosya formatı', 'fa-triangle-exclamation', '#ef4444');
-        }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
-    }
-
-    // ===================== UTILS =====================
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    let toastTimeout = null;
-    function showToast(msg, icon, color) {
-      const toast = document.getElementById('toast');
-      const toastIcon = document.getElementById('toastIcon');
-      const toastMsg = document.getElementById('toastMessage');
-      toastIcon.className = `fa-solid ${icon} toast-icon`;
-      toastIcon.style.color = color;
-      toastMsg.textContent = msg;
-      toast.classList.add('show');
-      if (toastTimeout) clearTimeout(toastTimeout);
-      toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500);
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && selectedDay) closeSidePanel();
-    });
-
-    // ===================== BOOT =====================
-    document.addEventListener('DOMContentLoaded', () => {
-      initData();
-      updateCountdown();
-      renderStats();
-      buildGrid();
-      updateAllDayCards();
-    });
-  </script>
+// ═══════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  initData();
+  renderStats();
+  buildGrid();
+  updateAllCards();
+  applyFilter();
+  initQuotes();
+  updateCountdown();
+  cdInterval=setInterval(updateCountdown,1000);
+  let vis=0;for(let i=1;i<=45;i++){const r=cardRefs.get(i);if(r&&r.el.style.display!=='none')vis++}
+  document.getElementById('visCount').textContent=`(${vis} gün)`;
+});
+</script>
 </body>
 </html>
