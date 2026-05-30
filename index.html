@@ -573,7 +573,7 @@
   <!-- HEATMAP -->
   <div style="height:1px;background:linear-gradient(90deg,transparent 5%,rgba(0,201,167,.18) 35%,rgba(212,160,32,.1) 65%,transparent 95%);margin-bottom:22px"></div>
   <section style="margin-bottom:28px;animation:fadeUp .5s .04s ease both">
-    <p class="section-label mb-3">45 Günlük Tamamlanma Haritası</p>
+    <p class="section-label mb-3">22 Günlük Tamamlanma Haritası</p>
     <div id="heatmap" class="flex gap-[3px]" style="height:14px"></div>
   </section>
 
@@ -693,9 +693,9 @@ const SUBJECTS = [
 ];
 const MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const DAYS   = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
-const START  = new Date(2026,4,5);
+const START  = new Date(2026,4,30);
 const EXAM   = new Date(2026,5,20,10,15,0);
-const SKEY   = 'yks_planner_v5';
+const SKEY   = 'yks_planner_v6';
 const RING_C = 2*Math.PI*18;
 const QUOTES = [
   {t:'Başarı, her gün tekrarlanan küçük çabaların toplamıdır.',    a:''},
@@ -749,7 +749,7 @@ function initData(){
   const saved=localStorage.getItem(SKEY);
   if(saved){try{
     appData=JSON.parse(saved);
-    if(!appData.days||appData.days.length!==45)throw 0;
+    if(!appData.days||appData.days.length!==22)throw 0;
     appData.days.forEach(d=>{
       SUBJECTS.forEach(s=>{if(!d.subjects[s.key])d.subjects[s.key]=[]});
       if(!d.notes)d.notes='';
@@ -759,7 +759,7 @@ function initData(){
     return;
   }catch(e){}}
   appData={days:[]};
-  for(let i=1;i<=45;i++){
+  for(let i=1;i<=22;i++){
     const day={day:i,subjects:{},notes:'',studyHours:0,mood:-1};
     SUBJECTS.forEach(s=>{day.subjects[s.key]=[]});
     appData.days.push(day);
@@ -773,7 +773,7 @@ function initData(){
 function dayStats(d){let total=0,done=0;for(const s of SUBJECTS){const t=d.subjects[s.key]||[];total+=t.length;for(const x of t)if(x.done)done++}return{total,done,percent:total>0?Math.round((done/total)*100):0}}
 function overallStats(){let tt=0,td=0,th=0;for(const d of appData.days){const s=dayStats(d);tt+=s.total;td+=s.done;th+=d.studyHours||0}return{tt,td,th,avg:tt>0?Math.round((td/tt)*100):0}}
 function subjStats(){return SUBJECTS.map(s=>{let total=0,done=0;for(const d of appData.days){const t=d.subjects[s.key]||[];total+=t.length;for(const x of t)if(x.done)done++}return{...s,total,done,pct:total>0?Math.round((done/total)*100):0}})}
-function streak(){let s=0;const today=new Date();today.setHours(0,0,0,0);for(let i=44;i>=0;i--){const date=dateOf(i+1);if(date>today)continue;const st=dayStats(appData.days[i]);if(st.total>0&&st.percent>=70)s++;else if(st.total>0)break}return s}
+function streak(){let s=0;const today=new Date();today.setHours(0,0,0,0);for(let i=21;i>=0;i--){const date=dateOf(i+1);if(date>today)continue;const st=dayStats(appData.days[i]);if(st.total>0&&st.percent>=70)s++;else if(st.total>0)break}return s}
 
 // ═══════════════════════════════════════
 //  COUNTDOWN
@@ -823,7 +823,7 @@ function updateStats(){
   if(sEl.avg)sEl.avg.textContent=st.avg+'%';
   if(sEl.stk)sEl.stk.textContent=s+' gün';
   if(sEl.hrs)sEl.hrs.textContent=st.th+'s';
-  if(sEl.days)sEl.days.textContent=active+'/45';
+  if(sEl.days)sEl.days.textContent=active+'/22';
   updateOverall(st);renderSubjBars();renderHeatmap();
 }
 function updateOverall(st){
@@ -867,8 +867,8 @@ function renderHeatmap(){
 // ═══════════════════════════════════════
 function buildGrid(){
   const grid=document.getElementById('dayGrid');grid.innerHTML='';
-  for(let w=0;w<Math.ceil(45/7);w++){
-    const s=w*7+1,e=Math.min(s+6,45);
+  for(let w=0;w<Math.ceil(22/7);w++){
+    const s=w*7+1,e=Math.min(s+6,22);
     const wh=document.createElement('div');
     wh.className='week-hdr';
     wh.style.animation=`fadeUp .4s ${w*.05}s ease both`;
@@ -930,7 +930,7 @@ function updateCard(n){
   ref.tags.innerHTML=active.length>0?`<div style="display:flex;flex-wrap:wrap;gap:4px">${active.map(s=>`<span class="stag" style="background:${s.color}12;color:${s.color}"><i class="fa-solid ${s.icon}" style="font-size:8px"></i>${s.name}</span>`).join('')}</div>`:'<span style="font-size:11px;color:#48486a;font-style:italic">Henüz görev eklenmedi</span>';
   applyFilterCard(ref.el,st);
 }
-function updateAllCards(){for(let i=1;i<=45;i++)updateCard(i)}
+function updateAllCards(){for(let i=1;i<=22;i++)updateCard(i)}
 
 // ═══════════════════════════════════════
 //  FILTER
@@ -945,7 +945,7 @@ function checkFilter(st){if(activeFilter==='all')return true;if(activeFilter==='
 function applyFilterCard(el,st){el.style.display=checkFilter(st)?'':'none'}
 function applyFilter(){
   let vis=0;
-  for(let i=1;i<=45;i++){const ref=cardRefs.get(i);if(!ref)continue;const st=dayStats(appData.days[i-1]);const show=checkFilter(st);ref.el.style.display=show?'':'none';if(show)vis++}
+  for(let i=1;i<=22;i++){const ref=cardRefs.get(i);if(!ref)continue;const st=dayStats(appData.days[i-1]);const show=checkFilter(st);ref.el.style.display=show?'':'none';if(show)vis++}
   document.getElementById('visCount').textContent=`(${vis} gün)`;
   document.querySelectorAll('[data-week]').forEach(wg=>{
     const hasVis=[...wg.querySelectorAll('.day-card')].some(c=>c.style.display!=='none');
@@ -966,9 +966,9 @@ function openDay(n){
   document.body.style.overflow='hidden';
   updateAllCards();
   const pb=document.getElementById('prevBtn'),nb=document.getElementById('nextBtn');
-  pb.disabled=n<=1;nb.disabled=n>=45;pb.style.opacity=n<=1?'.3':'1';nb.style.opacity=n>=45?'.3':'1';
+  pb.disabled=n<=1;nb.disabled=n>=22;pb.style.opacity=n<=1?'.3':'1';nb.style.opacity=n>=22?'.3':'1';
 }
-function navDay(dir){if(!selDay)return;const next=selDay+dir;if(next<1||next>45)return;openDay(next)}
+function navDay(dir){if(!selDay)return;const next=selDay+dir;if(next<1||next>22)return;openDay(next)}
 function closeSidePanel(){
   document.getElementById('overlay').classList.remove('open');
   document.getElementById('sidePanel').classList.remove('open');
@@ -1188,7 +1188,7 @@ function importData(event){
   const reader=new FileReader();
   reader.onload=e=>{try{
     const data=JSON.parse(e.target.result);
-    if(!data.days||data.days.length!==45)throw 0;
+    if(!data.days||data.days.length!==22)throw 0;
     appData=data;
     SUBJECTS.forEach(s=>appData.days.forEach(d=>{
       if(!d.subjects[s.key])d.subjects[s.key]=[];
@@ -1235,7 +1235,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   initQuotes();
   updateCountdown();
   cdInterval=setInterval(updateCountdown,1000);
-  let vis=0;for(let i=1;i<=45;i++){const r=cardRefs.get(i);if(r&&r.el.style.display!=='none')vis++}
+  let vis=0;for(let i=1;i<=22;i++){const r=cardRefs.get(i);if(r&&r.el.style.display!=='none')vis++}
   document.getElementById('visCount').textContent=`(${vis} gün)`;
 });
 </script>
